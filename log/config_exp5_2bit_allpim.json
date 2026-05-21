@@ -1,14 +1,14 @@
 {
-  "total_time_us": 3443.3,
+  "total_time_us": 1850.4,
   "first_layer": "decoder_0",
-  "layer_duration_us": 107.6,
+  "layer_duration_us": 57.825,
   "prefill_us": 0,
-  "decode_us": 107.6,
+  "decode_us": 57.825,
   "operations": {
     "name": "decoder_0",
-    "duration_us": 107.6,
+    "duration_us": 57.825,
     "start_us": 0.0,
-    "end_us": 107.6,
+    "end_us": 57.825,
     "stage": "decode",
     "children": [
       {
@@ -20,9 +20,9 @@
       },
       {
         "name": "attention",
-        "duration_us": 74.726,
+        "duration_us": 24.949,
         "start_us": 0.016896,
-        "end_us": 74.743,
+        "end_us": 24.966,
         "stage": "decode",
         "children": [
           {
@@ -44,9 +44,9 @@
           },
           {
             "name": "self_attention",
-            "duration_us": 66.378,
+            "duration_us": 16.601,
             "start_us": 4.6084,
-            "end_us": 70.986,
+            "end_us": 21.209,
             "stage": "decode",
             "children": [
               {
@@ -66,17 +66,17 @@
               },
               {
                 "name": "AttentionGen",
-                "duration_us": 66.378,
+                "duration_us": 16.601,
                 "start_us": 4.6084,
-                "end_us": 70.986,
+                "end_us": 21.209,
                 "processor": "PIM",
                 "stage": "decode"
               },
               {
                 "name": "AttentionMerge",
                 "duration_us": 0.0,
-                "start_us": 70.986,
-                "end_us": 70.986,
+                "start_us": 21.209,
+                "end_us": 21.209,
                 "stage": "overhead"
               }
             ]
@@ -84,15 +84,15 @@
           {
             "name": "attn_o_proj",
             "duration_us": 3.7565,
-            "start_us": 70.986,
-            "end_us": 74.743,
+            "start_us": 21.209,
+            "end_us": 24.966,
             "stage": "overhead",
             "children": [
               {
                 "name": "Linear",
                 "duration_us": 3.7565,
-                "start_us": 70.986,
-                "end_us": 74.743,
+                "start_us": 21.209,
+                "end_us": 24.966,
                 "processor": "GPU",
                 "stage": "overhead"
               }
@@ -101,8 +101,8 @@
           {
             "name": "all_reduce",
             "duration_us": 0.0,
-            "start_us": 74.743,
-            "end_us": 74.743,
+            "start_us": 24.966,
+            "end_us": 24.966,
             "stage": "overhead"
           }
         ]
@@ -110,36 +110,36 @@
       {
         "name": "residual_1",
         "duration_us": 0.024576,
-        "start_us": 74.743,
-        "end_us": 74.768,
+        "start_us": 24.966,
+        "end_us": 24.99,
         "stage": "overhead"
       },
       {
         "name": "post_attn_layer_norm",
         "duration_us": 0.016896,
-        "start_us": 74.768,
-        "end_us": 74.784,
+        "start_us": 24.99,
+        "end_us": 25.007,
         "stage": "overhead"
       },
       {
         "name": "feedforward",
-        "duration_us": 32.793,
-        "start_us": 74.784,
-        "end_us": 107.58,
+        "duration_us": 32.794,
+        "start_us": 25.007,
+        "end_us": 57.801,
         "stage": "overhead",
         "children": [
           {
             "name": "gate_proj",
             "duration_us": 10.941,
-            "start_us": 74.784,
-            "end_us": 85.725,
+            "start_us": 25.007,
+            "end_us": 35.948,
             "stage": "overhead",
             "children": [
               {
                 "name": "Linear",
                 "duration_us": 10.941,
-                "start_us": 74.784,
-                "end_us": 85.725,
+                "start_us": 25.007,
+                "end_us": 35.948,
                 "processor": "GPU",
                 "stage": "overhead"
               }
@@ -148,23 +148,23 @@
           {
             "name": "activation",
             "duration_us": 0.134,
-            "start_us": 85.725,
-            "end_us": 85.859,
+            "start_us": 35.948,
+            "end_us": 36.082,
             "processor": "GPU",
             "stage": "overhead"
           },
           {
             "name": "up_proj",
             "duration_us": 10.941,
-            "start_us": 85.859,
-            "end_us": 96.8,
+            "start_us": 36.082,
+            "end_us": 47.023,
             "stage": "overhead",
             "children": [
               {
                 "name": "Linear",
                 "duration_us": 10.941,
-                "start_us": 85.859,
-                "end_us": 96.8,
+                "start_us": 36.082,
+                "end_us": 47.023,
                 "processor": "GPU",
                 "stage": "overhead"
               }
@@ -172,16 +172,16 @@
           },
           {
             "name": "down_proj",
-            "duration_us": 10.777,
-            "start_us": 96.8,
-            "end_us": 107.58,
+            "duration_us": 10.778,
+            "start_us": 47.023,
+            "end_us": 57.801,
             "stage": "overhead",
             "children": [
               {
                 "name": "Linear",
-                "duration_us": 10.777,
-                "start_us": 96.8,
-                "end_us": 107.58,
+                "duration_us": 10.778,
+                "start_us": 47.023,
+                "end_us": 57.801,
                 "processor": "GPU",
                 "stage": "overhead"
               }
@@ -192,15 +192,15 @@
       {
         "name": "all_reduce",
         "duration_us": 0.0,
-        "start_us": 107.58,
-        "end_us": 107.58,
+        "start_us": 57.801,
+        "end_us": 57.801,
         "stage": "overhead"
       },
       {
         "name": "residual_1",
         "duration_us": 0.024576,
-        "start_us": 107.58,
-        "end_us": 107.6,
+        "start_us": 57.801,
+        "end_us": 57.825,
         "stage": "overhead"
       }
     ]

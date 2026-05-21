@@ -39,7 +39,7 @@ for f in files:
     gen = find_node(ops, 'AttentionGen')
     gen_dur = gen['duration_us'] if gen else 0
     gen_proc = gen.get('processor', '?') if gen else '?'
-    txt = f.replace('.json', '.txt')
+     txt = f.replace('.json', '.txt')
      qk = softmax = score_v = kv_quant = pim_rb = pim_pe = num_seq = 0.0
      qk_rb = qk_pe = sv_rb = sv_pe = 0.0
      if os.path.exists(txt):

@@ -61,16 +61,27 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
 
     NearbankGEMVResult result;
 
+    // For packed low-bit data, compute actual bytes and PE element throughput.
+    // element_size_bytes == 2: FP16, 2B/element, PE processes pe_width/2 elements/cycle
+    // element_size_bytes == 1: 2-bit packed, 4 elements/B, PE processes pe_width*4 elements/cycle
+    double bytes_per_element = element_size_bytes;
+    double pe_elements_per_cycle = config_.pe_width_bytes / element_size_bytes;
+    if (element_size_bytes <= 1) {
+        bytes_per_element = 0.25;
+        pe_elements_per_cycle = config_.pe_width_bytes * 4.0;
+    }
+
     // --- Step 1: Calculate total data movement ---
     // Elements: read A (M*K) + read B (K*N) + write result (M*N)
     double total_elements = static_cast<double>(M) * K +
                             static_cast<double>(K) * N +
                             static_cast<double>(M) * N;
-    result.total_bytes = total_elements * element_size_bytes;
+    result.total_bytes = total_elements * bytes_per_element;
 
     // --- Step 2: Distribute across banks ---
     int num_banks = config_.getTotalBanks();
     result.bytes_per_bank = result.total_bytes / num_banks;
+    double elements_per_bank = total_elements / num_banks;
 
     // --- Step 3: Row buffer processing ---
     double rb_size = config_.rowbuffer_size_bytes;
@@ -83,26 +94,22 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
         result.num_rowbuffer_fills = 1;
     }
 
-    // Time to fill one row buffer
+    // Time to fill one row buffer (full size)
     double time_per_rb_fill = rb_size / dram_bw * 1e9;  // Convert to ns
 
-    // Total row buffer fill time (without pipelining)
-    result.rowbuffer_time_ns = result.num_rowbuffer_fills * time_per_rb_fill;
+    // Total row buffer fill time (actual data volume)
+    result.rowbuffer_time_ns = result.bytes_per_bank / dram_bw * 1e9;
 
-    // --- Step 4: PE computation ---
-    double pe_width = config_.pe_width_bytes;
+    // --- Step 4: PE computation (in elements) ---
     double pe_cycle = config_.pe_cycle_time_ns;
 
-    // Time per row buffer worth of PE computation
-    double time_per_rb_pe = rb_size / pe_width * pe_cycle;
-
-    // Total PE time (without pipelining)
-    result.pe_compute_time_ns = result.bytes_per_bank / pe_width * pe_cycle;
+    // Total PE time (without pipelining): elements / elements_per_cycle * cycle_time
+    result.pe_compute_time_ns = elements_per_bank / pe_elements_per_cycle * pe_cycle;
 
     // --- Step 5: Pipelined latency (base GEMV only) ---
     if (result.bytes_per_bank <= rb_size) {
         double fill_time = result.bytes_per_bank / dram_bw * 1e9;
-        double compute_time = result.bytes_per_bank / pe_width * pe_cycle;
+        double compute_time = result.pe_compute_time_ns;
         result.base_gemv_time_ns = std::max(fill_time, compute_time);
     } else {
         double first_fill = time_per_rb_fill;
@@ -130,8 +137,8 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
         result.reduction_ops = reduction_elements;
 
         // Reduction distributed across banks like main GEMV
-        double red_per_bank = reduction_elements / num_banks * element_size_bytes;
-        result.reduction_time_ns = red_per_bank / pe_width * pe_cycle;
+        double red_per_bank_elems = reduction_elements / num_banks;
+        result.reduction_time_ns = red_per_bank_elems / pe_elements_per_cycle * pe_cycle;
 
         // PE time with reduction (no extra DRAM reads)
         double total_pe_all = result.pe_compute_time_ns + result.reduction_time_ns;
@@ -159,7 +166,7 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
         double dequant_elements = static_cast<double>(K) * N;  // K or V matrix
         double dequant_ops = 2.0 * dequant_elements;  // 1 MUL + 1 ADD per element
         double dequant_per_bank = dequant_ops / num_banks;
-        double dequant_pe_time = dequant_per_bank / pe_width * pe_cycle;
+        double dequant_pe_time = dequant_per_bank / pe_elements_per_cycle * pe_cycle;
 
         double total_pe_all = result.pe_compute_time_ns
                             + result.reduction_time_ns + dequant_pe_time;
