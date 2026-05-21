@@ -63,12 +63,14 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
 
     // For packed low-bit data, compute actual bytes and PE element throughput.
     // element_size_bytes == 2: FP16, 2B/element, PE processes pe_width/2 elements/cycle
-    // element_size_bytes == 1: 2-bit packed, 4 elements/B, PE processes pe_width*4 elements/cycle
+    // element_size_bytes == 1: 2-bit packed K, 4 elements/B, BUT Q is FP16 →
+    //   PE throughput bottleneck is FP16 Q: pe_width/2 elements/cycle.
+    //   Data movement: 4 elements/B for K (packed), Q still FP16.
     double bytes_per_element = element_size_bytes;
     double pe_elements_per_cycle = config_.pe_width_bytes / element_size_bytes;
     if (element_size_bytes <= 1) {
-        bytes_per_element = 0.25;
-        pe_elements_per_cycle = config_.pe_width_bytes * 4.0;
+        bytes_per_element = 0.25;  // 2-bit K: 4 elements per byte (packed)
+        pe_elements_per_cycle = config_.pe_width_bytes / 2.0;  // bottleneck: FP16 Q
     }
 
     // --- Step 1: Calculate total data movement ---
