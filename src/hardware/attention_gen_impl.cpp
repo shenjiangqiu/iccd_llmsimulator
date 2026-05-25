@@ -26,6 +26,14 @@ ExecStatus AttentionGenExecutionGPU(Device_Ptr device,
   hw_metric compute_peak_flops = config.compute_peak_flops;
   hw_metric memory_bandwidth = config.memory_bandwidth;
 
+  // GPU GEMV efficiency: for M=1 (decode), arithmetic intensity << roofline
+  // ridge, so the operation is purely memory-bound.  Peak FLOPS unreachable.
+  // Effective FLOPS ≈ memory_bandwidth × arithmetic_intensity.
+  // Use peak as-is (compute ≈ 0 for M=1, dominated by memory_duration in max()).
+  // For M > 1 (prefill / large batch), consider a factor ~0.3-0.5 × peak.
+  const hw_metric gpu_gemv_eff_factor = (input->precision_byte <= 1) ? 0.5 : 0.5;
+  hw_metric compute_eff_flops = compute_peak_flops * gpu_gemv_eff_factor;
+
   int head_dim = layer_info.head_dim;
   int num_heads = layer_info.num_heads;
   int num_kv_heads = layer_info.num_kv_heads;
@@ -72,7 +80,7 @@ ExecStatus AttentionGenExecutionGPU(Device_Ptr device,
       memory_size = 1.0 * (m * k * num_heads / num_kv_heads + k * n + m * n * num_heads / num_kv_heads) * input->precision_byte;
       total_memory_size += memory_size;
 
-      compute_duration = flops / compute_peak_flops * 1000 * 1000 * 1000;
+      compute_duration = flops / compute_eff_flops * 1000 * 1000 * 1000;
       exec_status.compute_duration += compute_duration;
       accumul_compute_duration += compute_duration;
 
@@ -98,11 +106,83 @@ ExecStatus AttentionGenExecutionGPU(Device_Ptr device,
     exec_status += temp;
   }
 
-  exec_status.total_duration +=
-      std::max(accumul_compute_duration, accumul_memory_duration);
+  // GPU dequantization overhead: when KV cache is 2-bit, GPU must dequantize
+  // to FP16 before GEMV.  2 ops/element (subtract zero_point + multiply by scale).
+  // K_matrix: accumul_len × head_dim_per_kv_head elements
+  if (input->precision_byte <= 1) {
+    double dequant_elements = static_cast<double>(accumul_len) * k;
+    double dequant_flops = 2.0 * dequant_elements;
+    time_ns dequant_time = dequant_flops / compute_eff_flops * 1000 * 1000 * 1000;
+    accumul_compute_duration += dequant_time;
+    exec_status.compute_duration += dequant_time;
+  }
 
-  exec_status.qk_duration =
-      std::max(accumul_compute_duration, accumul_memory_duration);
+  time_ns qk_total = std::max(accumul_compute_duration, accumul_memory_duration);
+  exec_status.total_duration += qk_total;
+  exec_status.qk_duration = qk_total;
+
+  // =========================================================================
+  // Context stage: scores @ V → output
+  // GEMV(1, seq_len) @ (seq_len, head_dim) → (1, head_dim)
+  // Repeated for each KV head, multiplied by attention_group_size
+  // =========================================================================
+  accumul_len = 0;
+  time_ns ctx_compute_duration = 0;
+  time_ns ctx_memory_duration = 0;
+
+  for (int seq_idx = 0; seq_idx < num_seq; seq_idx++) {
+    seq = seq_list.at(seq_idx);
+
+    m = seq->num_process_token;
+    k = seq->current_len + seq->num_process_token;
+    n = head_dim;
+
+    for (int kv_idx = 0; kv_idx < num_kv_heads; kv_idx++) {
+      flops = m * k * n * 2.0 * attention_group_size;
+      total_flops += flops;
+
+      memory_size = 1.0 * (m * k * num_heads / num_kv_heads + k * n + m * n * num_heads / num_kv_heads) * input->precision_byte;
+      total_memory_size += memory_size;
+
+      compute_duration = flops / compute_eff_flops * 1000 * 1000 * 1000;
+      exec_status.compute_duration += compute_duration;
+      ctx_compute_duration += compute_duration;
+
+      memory_duration = memory_size / memory_bandwidth * 1000 * 1000 * 1000;
+      ctx_memory_duration += memory_duration;
+    }
+    int _k = (k + 3) / 4 * 4;
+    accumul_len += _k;
+  }
+
+  if (use_ramulator) {
+    v_cache->setShape({accumul_len, head_dim * num_kv_heads});
+    ExecStatus temp;
+    temp =
+        issueRamulator(device, LayerType::ATTENTION_GEN, ProcessorType::GPU,
+                       DRAMRequestType::kRead, PIMOperandType::kDRAM, v_cache);
+    exec_status += temp;
+    ctx_memory_duration = temp.memory_duration;
+  }
+  else {
+    v_cache->setShape({accumul_len, head_dim * num_kv_heads});
+    ExecStatus temp;
+    temp = getIdealMemoryStatus(device, ProcessorType::GPU, DRAMRequestType::kRead, v_cache);
+    exec_status += temp;
+  }
+
+  // GPU dequant for V matrix (2-bit → FP16)
+  if (input->precision_byte <= 1) {
+    double dequant_elements = static_cast<double>(accumul_len) * n;
+    double dequant_flops = 2.0 * dequant_elements;
+    time_ns dequant_time = dequant_flops / compute_eff_flops * 1000 * 1000 * 1000;
+    ctx_compute_duration += dequant_time;
+    exec_status.compute_duration += dequant_time;
+  }
+
+  time_ns ctx_total = std::max(ctx_compute_duration, ctx_memory_duration);
+  exec_status.total_duration += ctx_total;
+  exec_status.score_v_duration = ctx_total;
 
   exec_status.compute_util = 1000.0 * 1000.0 * 1000.0 * total_flops /
                              compute_peak_flops / exec_status.total_duration;
@@ -111,11 +191,6 @@ ExecStatus AttentionGenExecutionGPU(Device_Ptr device,
 
   exec_status.flops = total_flops;
   exec_status.memory_size = total_memory_size;
-
-  // Per-stage timing for reporting
-  exec_status.qk_duration = accumul_compute_duration + accumul_memory_duration;
-  // softmax_duration set below
-  // score_v_duration set below
 
   return exec_status;
 };
@@ -343,8 +418,12 @@ ExecStatus AttentionGenExecutionPIM(Device_Ptr device,
       total_memory_size += memory_size;
 
       if (use_nearbank && nb_config.enable_scoring_in_pim) {
+        int comp_pb = input->precision_byte;
+        if (nb_config.enable_pim_dequant && input->precision_byte <= 1) {
+            comp_pb = 2;  // Q@K dequant: K is 2-bit, compute in FP16
+        }
         NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
-            m, k, n, input->precision_byte);
+            m, k, n, input->precision_byte, comp_pb);
         time_ns gemv_latency = gemv_result.latency_ns * attention_group_size;
         exec_status.compute_duration += gemv_latency;
         accumul_compute_duration += gemv_latency;
@@ -447,8 +526,12 @@ ExecStatus AttentionGenExecutionPIM(Device_Ptr device,
       total_memory_size += memory_size;
 
       if (use_nearbank && nb_config.enable_context_in_pim) {
+        int comp_pb = input->precision_byte;
+        if (input->precision_byte <= 1) {
+            comp_pb = 2;  // Score@V: scores are FP16, need FP16 dequant
+        }
         NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
-            m, k, n, input->precision_byte);
+            m, k, n, input->precision_byte, comp_pb);
         time_ns gemv_latency = gemv_result.latency_ns * attention_group_size;
         ctx_compute_duration += gemv_latency;
         ctx_memory_duration += gemv_result.rowbuffer_time_ns * attention_group_size;

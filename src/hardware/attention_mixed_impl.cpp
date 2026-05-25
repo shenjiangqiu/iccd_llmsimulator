@@ -157,8 +157,12 @@ ExecStatus AttentionMixedExecutionPIM(Device_Ptr device,
     total_memory_size += memory_size;
 
     if (use_nearbank && nb_config.enable_scoring_in_pim) {
+      int comp_pb = input->precision_byte;
+      if (nb_config.enable_pim_dequant && input->precision_byte <= 1) {
+          comp_pb = 2;  // Q@K dequant: K is 2-bit, compute in FP16
+      }
       NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
-          m, k, n, input->precision_byte);
+          m, k, n, input->precision_byte, comp_pb);
       total_duration += gemv_result.latency_ns;
     } else {
       time_ns comp_dur = flops / compute_peak_flops * 1000 * 1000 * 1000;
@@ -180,8 +184,12 @@ ExecStatus AttentionMixedExecutionPIM(Device_Ptr device,
     total_memory_size += memory_size;
 
     if (use_nearbank && nb_config.enable_context_in_pim) {
+      int comp_pb = input->precision_byte;
+      if (input->precision_byte <= 1) {
+          comp_pb = 2;  // Score@V: scores are FP16, need FP16 dequant
+      }
       NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
-          m, k, n, input->precision_byte);
+          m, k, n, input->precision_byte, comp_pb);
       total_duration += gemv_result.latency_ns;
     } else {
       time_ns comp_dur = flops / compute_peak_flops * 1000 * 1000 * 1000;

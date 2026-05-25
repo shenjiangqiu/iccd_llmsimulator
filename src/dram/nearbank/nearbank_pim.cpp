@@ -57,21 +57,34 @@ namespace llm_system {
 // single-buffer case, as it provides a reasonable approximation.
 // =============================================================================
 NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
-    int M, int K, int N, int element_size_bytes) const {
+    int M, int K, int N,
+    int data_element_size_bytes,
+    int compute_element_size_bytes) const {
 
     NearbankGEMVResult result;
 
-    // For packed low-bit data, compute actual bytes and PE element throughput.
-    // element_size_bytes == 2: FP16, 2B/element, PE processes pe_width/2 elements/cycle
-    // element_size_bytes == 1: 2-bit, both Q and K are 2-bit →
-    //   PE processes pe_width*4 = 64 elements/cycle (16B × 4 elements/B).
-    //   Data: 4 elements per byte (packed). Q broadcast negligible (1 token).
-    double bytes_per_element = element_size_bytes;
-    double pe_elements_per_cycle = config_.pe_width_bytes / element_size_bytes;
-    if (element_size_bytes <= 1) {
-        bytes_per_element = 0.25;  // 2-bit: 4 elements per byte (packed)
-        pe_elements_per_cycle = config_.pe_width_bytes * 4.0;  // 64 elements/cycle
+    // Data bytes: based on stored KV cache format (determines rowbuffer volume)
+    //  data_element_size_bytes == 2: FP16, 2B/element
+    //  data_element_size_bytes == 1: 2-bit packed, 4 elements/B → 0.25B/element
+    double bytes_per_element = data_element_size_bytes;
+    if (data_element_size_bytes <= 1) {
+        bytes_per_element = 0.25;  // 2-bit packed: 4 elements per byte
     }
+
+    // PE element throughput: based on compute precision
+    //  compute_element_size_bytes >= 2: FP16 PE, pe_width/compute = 8 elements/cycle
+    //  compute_element_size_bytes <= 1: 2-bit PE, pe_lowbit_width*4 = 128 elements/cycle
+    double pe_width_for_compute = config_.pe_width_bytes;
+    double pe_cycle_for_compute = config_.pe_cycle_time_ns;
+    double pe_elements_per_cycle = pe_width_for_compute / compute_element_size_bytes;
+    if (compute_element_size_bytes <= 1) {
+        pe_width_for_compute = config_.pe_lowbit_width_bytes;
+        pe_cycle_for_compute = config_.pe_lowbit_cycle_time_ns;
+        pe_elements_per_cycle = pe_width_for_compute * 4.0;  // 32B × 4 = 128 elem/cycle
+    }
+
+    // Flag: data is 2-bit but we compute in FP16 → need dequantization
+    bool implicit_dequant = (data_element_size_bytes <= 1 && compute_element_size_bytes >= 2);
 
     // --- Step 1: Calculate total data movement ---
     // Elements: read A (M*K) + read B (K*N) + write result (M*N)
@@ -103,10 +116,8 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
     result.rowbuffer_time_ns = result.bytes_per_bank / dram_bw * 1e9;
 
     // --- Step 4: PE computation (in elements) ---
-    double pe_cycle = config_.pe_cycle_time_ns;
-
     // Total PE time (without pipelining): elements / elements_per_cycle * cycle_time
-    result.pe_compute_time_ns = elements_per_bank / pe_elements_per_cycle * pe_cycle;
+    result.pe_compute_time_ns = elements_per_bank / pe_elements_per_cycle * pe_cycle_for_compute;
 
     // --- Step 5: Pipelined latency (base GEMV only) ---
     if (result.bytes_per_bank <= rb_size) {
@@ -140,7 +151,7 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
 
         // Reduction distributed across banks like main GEMV
         double red_per_bank_elems = reduction_elements / num_banks;
-        result.reduction_time_ns = red_per_bank_elems / pe_elements_per_cycle * pe_cycle;
+        result.reduction_time_ns = red_per_bank_elems / pe_elements_per_cycle * pe_cycle_for_compute;
 
         // PE time with reduction (no extra DRAM reads)
         double total_pe_all = result.pe_compute_time_ns + result.reduction_time_ns;
@@ -161,14 +172,25 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
     }
 
     // --- Step 6b: PIM dequantization overhead ---
-    // When enabled, 2-bit KV data is dequantized to FP16 inside PIM
-    // before GEMV.  Per element: 1 MUL (scale×int2) + 1 ADD (offset).
+    // Triggers when:
+    //   a) enable_pim_dequant flag AND compute is FP16 (avoid double-counting
+    //      with asymmetric quant which operates in 2-bit space)
+    //   b) implicit_dequant: data is 2-bit but compute is FP16
+    //      (e.g. Score@V in Exp5: scores are FP16, V is 2-bit).
+    // Per element: 1 MUL (scale×int2) + 1 ADD (offset).
     // Done inline with GEMV on the same data stream — PE time only.
-    if (config_.enable_pim_dequant) {
+    // Dequant ops use low-bit PE rate; subsequent GEMV uses FP16 PE rate
+    // (pe_elements_per_cycle already reflects compute precision).
+    bool need_dequant = implicit_dequant ||
+        (config_.enable_pim_dequant && compute_element_size_bytes >= 2);
+
+    if (need_dequant) {
         double dequant_elements = static_cast<double>(K) * N;  // K or V matrix
         double dequant_ops = 2.0 * dequant_elements;  // 1 MUL + 1 ADD per element
         double dequant_per_bank = dequant_ops / num_banks;
-        double dequant_pe_time = dequant_per_bank / pe_elements_per_cycle * pe_cycle;
+        // Dequant uses low-bit PE (2-bit processing, not FP16)
+        double lowbit_pe_rate = config_.pe_lowbit_width_bytes * 4.0;
+        double dequant_pe_time = dequant_per_bank / lowbit_pe_rate * config_.pe_lowbit_cycle_time_ns;
 
         double total_pe_all = result.pe_compute_time_ns
                             + result.reduction_time_ns + dequant_pe_time;
@@ -190,7 +212,8 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(2);
     oss << "GEMV(" << M << "x" << K << " @ " << K << "x" << N
-        << ", elem=" << element_size_bytes << "B)"
+        << ", data=" << data_element_size_bytes << "B"
+        << ", comp=" << compute_element_size_bytes << "B)"
         << " total=" << result.total_bytes << "B"
         << " per_bank=" << result.bytes_per_bank << "B"
         << " rb_fills=" << result.num_rowbuffer_fills
@@ -200,6 +223,12 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
     if (config_.enable_asymmetric_quant) {
         oss << ", red=" << result.reduction_time_ns << "ns"
             << ", red_ops=" << result.reduction_ops;
+    }
+    if (implicit_dequant) {
+        oss << ", impl_deq";
+    }
+    if (config_.enable_pim_dequant) {
+        oss << ", expl_deq";
     }
     oss << ")";
     result.description = oss.str();

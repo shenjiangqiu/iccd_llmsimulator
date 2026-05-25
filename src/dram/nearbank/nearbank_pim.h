@@ -76,13 +76,25 @@ class NearbankPIMUnit {
     //   M: rows of first matrix (batch dimension)
     //   K: inner dimension (shared between matrices)
     //   N: columns of second matrix
-    //   element_size_bytes: size of each element in bytes
-    //     (2 for FP16, 0.25 for 2-bit quantized)
+    //   data_element_size_bytes: size of the stored (K/V) matrix elements
+    //     (2 for FP16, 1 for 2-bit packed -> 0.25B real storage)
+    //     Determines rowbuffer data volume.
+    //   compute_element_size_bytes: size for PE computation precision
+    //     (2 for FP16, 1 for 2-bit)
+    //     Determines PE element throughput. Different from data size when
+    //     dequantization is needed (e.g., Score@V: V stored 2-bit, computed FP16).
     //
     // Returns: NearbankGEMVResult with latency breakdown
     // -------------------------------------------------------------------------
     NearbankGEMVResult computeGEMVLatency(int M, int K, int N,
-                                          int element_size_bytes) const;
+                                          int data_element_size_bytes,
+                                          int compute_element_size_bytes) const;
+
+    // Backward-compatible overload: data and compute use same precision
+    NearbankGEMVResult computeGEMVLatency(int M, int K, int N,
+                                          int element_size_bytes) const {
+        return computeGEMVLatency(M, K, N, element_size_bytes, element_size_bytes);
+    }
 
     // Access config
     const NearbankPIMConfig& getConfig() const { return config_; }

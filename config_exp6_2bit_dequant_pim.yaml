@@ -53,11 +53,13 @@ nearbank_pim:
   rowbuffer_size_bytes: 2048
   pe_width_bytes: 16.0
   pe_cycle_time_ns: 0.5
+  pe_lowbit_width_bytes: 32.0
+  pe_lowbit_cycle_time_ns: 0.5
   dram_to_rb_bw_per_bank: 32000000000.0
   enable_softmax_in_pim: false
   enable_context_in_pim: true
   enable_scoring_in_pim: true
-  enable_asymmetric_quant: true
+  enable_asymmetric_quant: false
   zero_point_q: 1.0
   zero_point_k: 2.0
   enable_pim_dequant: true
