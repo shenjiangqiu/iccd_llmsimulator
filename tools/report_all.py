@@ -28,6 +28,10 @@ EXP_LABELS = {
     "exp4": "2-bit Hyb.",
     "exp5": "2-bit All",
     "exp6": "2-bit Deq.",
+    "exp4_pe_f16_8_i2_16": "Hyb (8B/16B)",
+    "exp4_pe_f16_8_i2_32": "Hyb (8B/32B)",
+    "exp4_pe_f16_16_i2_16": "Hyb (16B/16B)",
+    "exp4_pe_f16_16_i2_32": "Hyb (16B/32B)",
 }
 
 
@@ -133,15 +137,30 @@ def collect_data(log_dir):
         # Identify model: remove known experiment suffixes
         model = default_model
         exp = parts
-        for e in ["exp1", "exp2", "exp3", "exp4", "exp5", "exp6"]:
-            if e in parts:
-                exp = e
-                prefix = parts[:parts.index(e)]
+        # Check PE variants first (longer match)
+        pe_variants = [k for k in EXP_LABELS if k.startswith("exp4_pe")]
+        for pe in sorted(pe_variants, key=len, reverse=True):
+            if pe in parts:
+                exp = pe
+                prefix = parts[:parts.index(pe)]
                 if prefix and prefix.endswith("_"):
                     prefix = prefix[:-1]
                 if prefix in MODEL_PARAMS:
                     model = prefix
                 break
+        else:
+            for e in ["exp1", "exp2", "exp3", "exp5", "exp6", "exp4"]:
+                if e in parts and e not in [p for p in pe_variants]:
+                    # make sure we don't match exp4_pe as exp4
+                    if e == "exp4" and any(pe in parts for pe in pe_variants):
+                        continue
+                    exp = e
+                    prefix = parts[:parts.index(e)]
+                    if prefix and prefix.endswith("_"):
+                        prefix = prefix[:-1]
+                    if prefix in MODEL_PARAMS:
+                        model = prefix
+                    break
 
         d = parse_json(jf)
         txt_path = jf.replace(".json", ".txt")
@@ -254,25 +273,58 @@ def generate_markdown(results, output_path=None):
         lines.append("")
         lines.append("")
 
-    # === Cross-Model Comparison ===
-    lines.append("## Cross-Model Comparison (Hybrid)")
+    # === Decode Speedup Summary (vs FP16 GPU) ===
+    lines.append("## Decode Speedup vs. FP16 GPU (Gen latency)")
     lines.append("")
-    headers = ["Model", "kv_heads", "Score", "Aggregate", "Gen", "Decode tok/s"]
+
+    # Build config list: base configs + PE variants
+    base_configs = ["exp1", "exp2", "exp3", "exp4", "exp5", "exp6"]
+    pe_configs = [k for k in EXP_LABELS if k.startswith("exp4_pe")]
+    all_configs = base_configs + sorted(pe_configs)
+
+    models_sorted = sorted(results.keys())
+    headers = ["Config"] + models_sorted
     lines.append("| " + " | ".join(headers) + " |")
     lines.append("|" + "|".join(["---"] * len(headers)) + "|")
 
-    for model in sorted(results.keys()):
-        params = MODEL_PARAMS.get(model, {})
-        d = results[model].get("exp4", {})
-        decode_tps = compute_throughput(d, params)
-        row = [
-            model,
-            str(params.get("kv_heads", "?")),
-            format_num(d.get("qk")),
-            format_num(d.get("score_v")),
-            format_num(d.get("qk", 0) + d.get("score_v", 0)),
-            format_num(decode_tps, ",.0f"),
-        ]
+    for exp in all_configs:
+        row = [EXP_LABELS.get(exp, exp)]
+        for model in models_sorted:
+            d = results[model].get(exp, {})
+            gen = d.get("qk", 0) + d.get("score_v", 0)
+            if gen > 0:
+                fp16_gen = results[model].get("exp1", {}).get("qk", 0) + results[model].get("exp1", {}).get("score_v", 0)
+                if fp16_gen > 0:
+                    speedup = fp16_gen / gen
+                    row.append(f"{speedup:.1f}×")
+                else:
+                    row.append(format_num(gen))
+            else:
+                row.append("-")
+        lines.append("| " + " | ".join(row) + " |")
+    lines.append("")
+
+    # === Decode Throughput Speedup ===
+    lines.append("## Decode Throughput Speedup vs. FP16 GPU")
+    lines.append("")
+    lines.append("| " + " | ".join(headers) + " |")
+    lines.append("|" + "|".join(["---"] * len(headers)) + "|")
+
+    for exp in all_configs:
+        row = [EXP_LABELS.get(exp, exp)]
+        for model in models_sorted:
+            d = results[model].get(exp, {})
+            params = MODEL_PARAMS.get(model, {})
+            tps = compute_throughput(d, params)
+            if tps > 0:
+                fp16_tps = compute_throughput(results[model].get("exp1", {}), params)
+                if fp16_tps > 0:
+                    speedup = tps / fp16_tps
+                    row.append(f"{speedup:.1f}×")
+                else:
+                    row.append(f"{tps:,.0f}")
+            else:
+                row.append("-")
         lines.append("| " + " | ".join(row) + " |")
     lines.append("")
 
