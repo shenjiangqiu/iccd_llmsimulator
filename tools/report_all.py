@@ -32,6 +32,10 @@ EXP_LABELS = {
     "exp4_pe_f16_8_i2_32": "Hyb (8B/32B)",
     "exp4_pe_f16_16_i2_16": "Hyb (16B/16B)",
     "exp4_pe_f16_16_i2_32": "Hyb (16B/32B)",
+    "exp5_pe_f16_8_i2_16": "All (8B/16B)",
+    "exp5_pe_f16_8_i2_32": "All (8B/32B)",
+    "exp5_pe_f16_16_i2_16": "All (16B/16B)",
+    "exp5_pe_f16_16_i2_32": "All (16B/32B)",
 }
 
 
@@ -180,15 +184,32 @@ def collect_data(log_dir):
         parts = basename.replace("config_", "").replace(".txt", "")
         model = default_model
         exp = parts
-        for e in ["exp1", "exp2", "exp3", "exp4", "exp5", "exp6"]:
-            if e in parts:
-                exp = e
-                prefix = parts[:parts.index(e)]
+        # Check PE variants first
+        pe_variants = [k for k in EXP_LABELS if k.startswith(("exp4_pe", "exp5_pe"))]
+        for pe in sorted(pe_variants, key=len, reverse=True):
+            if pe in parts:
+                exp = pe
+                prefix = parts[:parts.index(pe)]
                 if prefix and prefix.endswith("_"):
                     prefix = prefix[:-1]
                 if prefix in MODEL_PARAMS:
                     model = prefix
                 break
+        else:
+            for e in ["exp1", "exp2", "exp3", "exp6", "exp5", "exp4"]:
+                if e in parts:
+                    skip = False
+                    for pe in pe_variants:
+                        if pe in parts:
+                            skip = True; break
+                    if skip: continue
+                    exp = e
+                    prefix = parts[:parts.index(e)]
+                    if prefix and prefix.endswith("_"):
+                        prefix = prefix[:-1]
+                    if prefix in MODEL_PARAMS:
+                        model = prefix
+                    break
         if model not in results or exp not in results[model]:
             d = parse_raw_output(open(tf).read())
             if d:
@@ -279,7 +300,7 @@ def generate_markdown(results, output_path=None):
 
     # Build config list: base configs + PE variants
     base_configs = ["exp1", "exp2", "exp3", "exp4", "exp5", "exp6"]
-    pe_configs = [k for k in EXP_LABELS if k.startswith("exp4_pe")]
+    pe_configs = [k for k in EXP_LABELS if k.startswith(("exp4_pe", "exp5_pe"))]
     all_configs = base_configs + sorted(pe_configs)
 
     models_sorted = sorted(results.keys())
