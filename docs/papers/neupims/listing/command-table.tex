@@ -1,0 +1,25 @@
+\begin{table}
+\centering
+\small % Used small font due to width
+\renewcommand{\arraystretch}{1.05}
+\caption{List of \neupims commands.}
+\footnotesize
+\label{tab:neupims-commands}
+\vspace{-2ex}
+\begin{tabular}{c|c}
+
+\hline
+\textbf{Command} & \textbf{Description}                                                                                                                 \\ 
+\hline
+% GWRITE         & MEM                                                                      & \begin{tabular}[c]{@{}l@{}}Copy data in row buffer to the Global buffer\\\end{tabular}                                      \\
+% GACT           & PIM                                                                      & \begin{tabular}[c]{@{}l@{}}Ganged activation of 4-bank cluster\\\end{tabular}                                               \\
+PIM\_HEADER                                                                           & \begin{tabular}[c]{@{}l@{}}Configure a GEMV operation \end{tabular} \\
+
+PIM\_GEMV                                                                          & \begin{tabular}[c]{@{}l@{}} Perform $k$ dot-products and read the results   \\\end{tabular}                                                           \\
+PIM\_PRECHARGE                                                                       & \begin{tabular}[c]{@{}l@{}}Precharge PIM row buffer\\\end{tabular}                                                          \\
+
+\hline
+\end{tabular}
+\vspace{-2ex}
+\end{table}
+%

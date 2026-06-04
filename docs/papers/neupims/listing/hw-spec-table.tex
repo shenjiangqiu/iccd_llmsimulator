@@ -1,0 +1,18 @@
+\begin{table}[]
+\caption{\neupims hardware specification.}
+\footnotesize
+\vspace{-2ex}
+\label{tab:hardware-spec}
+\begin{tabular}{cccc}
+\hline
+\multicolumn{2}{c|}{\textbf{NPU Configuration}}                                                         & \multicolumn{2}{c}{\textbf{HBM Organization}}                             \\ \hline
+\multicolumn{1}{c|}{Systolic Arrays/Chip}                & \multicolumn{1}{c|}{8}                       & \multicolumn{1}{c|}{Banks/Bankgroup}                 & 4                  \\
+\multicolumn{1}{c|}{Vector Units/Chip}                   & \multicolumn{1}{c|}{8}                       & \multicolumn{1}{c|}{Banks/Channel}                   & 32                 \\
+\multicolumn{1}{c|}{HBM Channels/Chip}                   & \multicolumn{1}{c|}{32}                      & \multicolumn{1}{c|}{Frequency}                           & 1GHz               \\
+\multicolumn{1}{c|}{Systolic Array Size}                 & \multicolumn{1}{c|}{128 x 128}               & \multicolumn{1}{c|}{Capacity/Channel}                & 1GB                \\
+\multicolumn{1}{c|}{Vector Unit Size}                    & \multicolumn{1}{c|}{128 x 1}               & \multicolumn{1}{c|}{Page Size}                       & 1KB                \\ \hline
+\multicolumn{4}{c}{\textbf{HBM Timing Parameter}}                                                                                                                                   \\ \hline
+\multicolumn{4}{c}{\begin{tabular}[c]{@{}c@{}}tRP = 14, tRCD = 14, tRAS = 34, tRRD\_L = 6, tWR = 16, \\ tCCD\_S = 1, tCCD\_L = 2, tREFI = 3900, tRFC = 260, tFAW = 30\end{tabular}} \\ \hline
+\end{tabular}
+\vspace{-2ex}
+\end{table}

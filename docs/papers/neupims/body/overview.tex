@@ -1,0 +1,60 @@
+\section{Overview of \neupims}
+\label{sec:neupims}
+
+Figure~\ref{fig:overview} illustrates the overview of the proposed \neupims system.
+%
+This system alleviates the low resource utilization of an LLM inference serving system.
+%
+To achieve this goal, \neupims comprises: (1) an NPU equipped with systolic arrays, vector processing units, and multiple HBM-based PIM channels that collaboratively process the batched inference requests, and (2) a scheduler that partitions an inference batch into two sub-batches and leverages sub-batch parallelism to enable their interleaved executions for enhanced NPU-PIM parallelization. 
+%
+Note that NPU in the \neupims device is a general representation of any ML accelerator such as TPU~\cite{tpuv4} and is not the contribution of this work.
+%
+In this paper, we propose a novel accelerator integrating PIM with NPU and the corresponding scheduling strategy.
+%
+First, we provide an overview of the system. 
+%
+
+\niparagraph{\circled{1} \neupims system.}
+%
+This system comprises a host CPU, multiple \neupims devices (i.e., NPU+PIM accelerators), and multiple standalone NPUs connected through a high-bandwidth interconnect such as PCIe and CXL.
+%
+As the summarization phase is entirely composed of GEMMs, we delegate its computation to the standalone NPUs, while \neupims focuses on the computation of the generation phase. 
+%
+While the diagram visualizes a single-node \neupims system, the system can scale to multiple nodes, which will be discussed in more detail in Section~\ref{sec:scale}.
+%
+As in typical inference serving systems, our system receives the LLM inference requests in a streaming fashion. 
+%
+The requests are assigned to a PIM channel and queued in the request pool table until the on-going iteration is completed and a new iteration commences for the execution. 
+
+\niparagraph{\circled{2} \neupims accelerator.}
+%
+We extend the design of standard PIM to support \neupims LLM inferencing strategy. 
+%
+The bank architecture is expanded to include dual row buffers—one for PIM execution and the other for regular memory accesses, as illustrated in Figure~\ref{fig:newton-vs-neupims}.
+%
+The dual row buffer architecture enables the NPU to perform memory read/write accesses on the bank rows that are not currently in use for PIM computations. This segregation is regulated by memory controllers to ensure that multiple activations are not issued over the same bank row (Section~\ref{sec:architecture}).
+%
+
+\niparagraph{\circled{3} \neupims scheduling algorithm.} 
+%
+Our prototype \neupims accelerator has 32 HBM-based PIM channels, each of which is controlled by its own memory controller. 
+%
+The memory controllers manage the interleaving of memory read/write commands and PIM commands in a way that the inter-command timing delays are not violated, while maximizing the control path throughput. 
+%
+Effective interleaving is critical for performance since it directly affects the concurrent executions of NPU and PIM (Section~\ref{sec:scheduler}). 
+%
+
+
+\niparagraph{\circled{4} \neupims compiler framework.}
+%
+\neupims compiler framework is the frontend where the system admin provides the desired LLM and system specifications. 
+%
+The syntax of LLM specification largely resembles ONNX~\cite{onnx}. 
+%
+Upon receiving the specification, the compiler translates the model configuration into operations, each of which is represented as an intermediate representation (IR).
+%
+For the given IR, our compiler produces NPU and \neupims instruction binaries (i.e., Compute and MEM/PIM access instructions).
+%
+This process involves adjusting tile sizes and the sequence of instructions to align with the \neupims system specification.
+%
+

@@ -125,6 +125,21 @@ static ModelConfig llama4_maverick = // 128 Expert
                 ModelConfig(5120, 128, 48, 40, 8, 1048576, 16384, 8192, 1, 2, 128, 1, 2, 1,
                             3, 0, 0, 0, 0, 0, 202048, false, false, 0.0,"llama4_maverick");
 
+static ModelConfig opt_6_7B =
+    ModelConfig(4096, 128, 32, 32, 32, 2048, 16384,
+                16384, 1, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 50272, false, false, 0.0,
+                "opt_6_7B");
+
+static ModelConfig qwen3_8B =
+    ModelConfig(4096, 128, 36, 32, 8, 131072, 14336,
+                14336, 1, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 151936, false, false, 0.0,
+                "qwen3_8B");
+
+static ModelConfig glm4_9B =
+    ModelConfig(4096, 128, 40, 32, 4, 131072, 14336,
+                14336, 1, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 151552, false, false, 0.0,
+                "glm4_9B");
+
 // if model_config.q_lora_rank != 0 -> MLA로
 
 }  // namespace llm_system

@@ -178,6 +178,12 @@ int main(int argc, char *argv[]) {
     model_config = llama4_scout;
   }else if (!model_name.compare("llama4_maverick")) {
     model_config = llama4_maverick;
+  } else if (!model_name.compare("opt_6_7B")) {
+    model_config = opt_6_7B;
+  } else if (!model_name.compare("qwen3_8B")) {
+    model_config = qwen3_8B;
+  } else if (!model_name.compare("glm4_9B")) {
+    model_config = glm4_9B;
   } 
   else {
     fail("No model configuration of " + model_name);

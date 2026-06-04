@@ -1,0 +1,55 @@
+\section{Related Work}
+\label{sec:related}
+
+
+
+\niparagraph{LLM inference serving.}
+%
+Multiple LLM serving systems optimize for their inference performance either through reducing the memory footprint~\cite{arxiv21-lightseq, kvcaching}, improving the kernel execution strategy~\cite{alpa}, determining the partitioning techniques for intra- and inter- operator~\cite{pip, megatronlm, arxiv22-efficiently} execution, or a combination of these~\cite{deepspeed, orca, vllm, hugging-face, tensorflow-serving, tensorrt-llm, nvidia_triton, miao2023spotserve, li2023alpaserve}.
+%
+In this work, we specifically tackle the utilization of the current hardware platforms which deploy these models through a compute and I/O suitable platforms, NPUs and PIMs, to create a more efficient system. 
+%
+Moreover, to ensure such a heterogeneous system can perform well for LLM inferencing, we offer a scheduling policy.
+%
+Prior works that support kernel optimizations for better utilization of GPUs for LLMs, cannot fully mitigate the I/O and bandwidth bottleneck of GEMV kernels. 
+%
+Instead in this work, we build a system that can benefit from existing optimizations such as selective batching, KV caching, etc. to offer better utilization across the transformer model architecture.
+%
+
+\niparagraph{PIM for language model support.}
+%
+TransPIM~\cite{hpca22-transpim} is a PIM solution that accelerates the end-to-end transformer inference using PIM. 
+%
+The work proposes a data loading overhead reduction technique by customizing its dataflow for transformer models.
+%
+TransPIM is optimized for attention operations of transformer encoder blocks, making it unsuitable for LLM inference based on decoder blocks.
+%
+Furthermore, it is tailored for single-request inference, offering suboptimal performance for batched inference scenarios.
+%
+AttAcc~\cite{AttAcc} further offers an accelerator (with PIM) for attention layer to reduce the data movement for the KV matrices.
+%
+Instead \neupims proposes a new system for PIM accelerator in addition to the scheduling of operations for the end to end inference of LLMs. 
+
+There are also variety of prior works that leverage PIM for GEMV operations~\cite{hcs23-aquabolt-xl, isscc22-aim-gddr6, micro21-trim, hbm_pim, newton, tensor-dimm, SpaceA} due to their inherent potential in benefits towards bandwidth bound applications.
+%
+However, none of these works enable simultaneous execution of PIM and NPU operations, necessary for the efficient execution of LLM inference. 
+
+\niparagraph{Heterogeneous acceleration pipeline for deep learning.}
+%
+There are a variety of prior works that propose a pipelined solution for machine learning~\cite{fae, dnnweaver:micro, cosmic:micro, dana}, however none of these prior works leverage PIM to alleviate the bandwidth requirement of LLMs.
+%
+Certain prior works use an accelerator for specific models~\cite{hotline, scratchpipe, tabla:hpca}, however, they do not alleviate the under-utilization of GEMV and GEMM operations in transformer decoder blocks.
+
+%
+
+%
+\if 0
+Samsung Aquabolt-XL\cite{hcs23-aquabolt-xl}
+SK Hynix Aim-GDDR6~\cite{isscc22-aim-gddr6}
+trim\cite{micro21-trim}
+HBM-PIM \cite{hbm_pim}
+Newton \cite{newton}
+tensor-dimm \cite{tensor-dimm}
+SpaceA\cite{SpaceA}
+%
+\fi 

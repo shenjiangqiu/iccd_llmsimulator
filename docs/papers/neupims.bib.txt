@@ -1,0 +1,10 @@
+@inproceedings{Heo_2024, series={ASPLOS ’24},
+   title={NeuPIMs: NPU-PIM Heterogeneous Acceleration for Batched LLM Inferencing},
+   url={http://dx.doi.org/10.1145/3620666.3651380},
+   DOI={10.1145/3620666.3651380},
+   booktitle={Proceedings of the 29th ACM International Conference on Architectural Support for Programming Languages and Operating Systems, Volume 3},
+   publisher={ACM},
+   author={Heo, Guseul and Lee, Sangyeop and Cho, Jaehong and Choi, Hyunmin and Lee, Sanghyeon and Ham, Hyungkyu and Kim, Gwangsun and Mahajan, Divya and Park, Jongse},
+   year={2024},
+   month=Apr, pages={722–737},
+   collection={ASPLOS ’24} }

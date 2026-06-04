@@ -1,0 +1,48 @@
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+\SetKwInput{KwData}{Parameter}
+\SetKwComment{Comment}{\textsf{//} }{}
+\SetKwComment{CommentTwo}{/* }{~*/}
+
+\SetKwFunction{GetLoad}{\textnormal{GetLoad}}
+\SetKwFunction{Min}{\textnormal{Min}}
+\SetKwFunction{append}{\textnormal{append}}
+\SetKwFunction{MHAest}{\textnormal{MHALatencyEstimation}}
+\SetKwFunction{Index}{\textnormal{index( )}}
+
+\begin{algorithm}[tb]
+\footnotesize
+% \caption{Channel Load Balancing }
+\caption{Greedy Min-Load Bin Packing}
+\label{alg:channel-load-balancing}
+\LinesNumbered
+\KwIn{$
+    \hspace{0.25em}{L_{req}}:\ \small\textit{A list for sqeunce length of new requests }\newline 
+    \hspace{0.25em}\ \ \ {L_{chnl}}:\ \small\textit{A list for request allocation of channels }
+$}
+% \KwOut{$
+%     \hspace{0.25em}{seq\_len}: \small\textit{A\enspace sequence\enspace length \enspace of \enspace request}
+% $}
+
+\vspace{1ex}
+\CommentTwo{\textit{\textsf{\small{Calculate each channel's total load by applying \newline MHA latency estimation to each allocated request }}}}
+% $L_{load}\ =\ \GetLoad{\ensuremath{L_{channel}}}$\;
+$L_{load}\ \leftarrow\ []$\;
+\ForEach{$chnl$ in \ $L_{chnl}$}{
+    $Sum_{load}\ \leftarrow\ 0$\;
+    \ForEach{$req$ in \ $chnl$}{
+        $Sum_{load}\ +=\ \MHAest{req}$
+    }
+    $L_{load}.\append{\ensuremath{Sum_{load}}}$\;
+}
+\vspace{1ex}
+\CommentTwo{\textit{\textsf{\small{Allocate each request by greedy algorithm}}}}
+\ForEach{$new\_req$ in \ $L_{req}$}{
+    $min\_index\ =\ {\Min{\ensuremath{L_{load}}}.\Index}$\;
+    $L_{chnl}[min\_index].{\append{new\_req}}$\;
+    $load_{req}\ =\ \MHAest{new\_req}$\;
+    $L_{load}[min\_index]\ +=\ {\ensuremath{load_{req}}}$\;
+}
+\Return{$L_{chnl}$}
+\end{algorithm}
+\vspace{-1ex}

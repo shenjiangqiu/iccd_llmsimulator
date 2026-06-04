@@ -1,0 +1,76 @@
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+\SetKwInput{KwData}{Parameter}
+\SetKwComment{Comment}{\textsf{//} }{}
+\SetKwFunction{Size}{\textnormal{Size}}
+\SetKwFunction{Ceil}{\textnormal{\textbf{ceil}}}
+\SetKwFunction{Floor}{\textnormal{\textbf{floor}}}
+\SetKwFunction{append}{\textnormal{append}}
+
+
+\begin{algorithm}[tb]
+\footnotesize
+\caption{Sub-Batch Partitioning }
+\label{alg:sub-batch-partition}
+\LinesNumbered
+
+\KwIn{$
+    \hspace{0.25em}\ \ \ {L_{req}}:\ \small\textit{A list of active request set in each channel}
+$}
+
+\KwOut{$
+    \hspace{0.25em}{SB_1,\ SB_2}:\ \small\textit{Sub-batchs for interleaving}
+$}
+\vspace{1ex}
+
+% \cancel{$turn\ \leftarrow\ True$\;}
+$turn\ \leftarrow\ True$;
+
+$SB_1,\ SB_2\ \leftarrow\ []$\;
+\ForEach{$req_{chnl}$ in $L_{req}$}{
+        $bsize\ \leftarrow\ \Size{\ensuremath{req_{chnl}}}\ /\ 2$\;
+
+    \If{$\Size{\ensuremath{req_{chnl}}}\ \%\ 2\ !=\ 0$}{
+            $bsize\ =\ turn\ ?\ \Ceil{\ensuremath{bsize}}\ :\
+            \Floor{\ensuremath{bsize}}$\;
+
+            $turn\ =\ !turn$\;
+    }
+
+        $bsize\ =\ \mathbf{int}({\ensuremath{bsize}})$;
+
+    \vspace{1ex}
+        $SB_1.\append{\ensuremath{req_{chnl}[:\ bsize]}}$\;
+        $SB_2.\append{\ensuremath{req_{chnl}[bsize\ :]}}$\;
+
+    % \magenta{\CommentTwo{\textit{\textsf{\small{Remove: From here}}}}}
+    % \If{\cancel{$size\ !=\ 0$}}{
+    %     \cancel{
+    %     $size\ =\ turn\ ?\ \Ceil{\ensuremath{size}}\ :\
+    %      \Floor{\ensuremath{size}}$\;
+    %      }
+         
+    %     \cancel{ 
+    %     $turn\ =\ !turn$
+    %     }
+    % }
+    % \magenta{\CommentTwo{\textit{\textsf{\small{Remove: To here}}}}}
+}
+\Return{$SB_1,\ SB_2$}
+
+\end{algorithm}
+
+
+
+
+
+% \begin{algorithm}
+% \caption{Sub-Batch Partitioning Algorithm}
+% \label{alg:sub-batch-partition}
+% \begin{algorithmic}[1]
+%     \Require A list of request sequence length in channel [$l1, l2, ..., lk$]
+%     % \Ensure $y = x^n$
+%     \STATE return Two sub-batches
+%     \Statex
+% \end{algorithmic}
+% \end{algorithm}

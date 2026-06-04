@@ -1,0 +1,41 @@
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+\SetKwInput{KwData}{Parameter}
+\SetKwComment{Comment}{\textsf{//} }{}
+\SetKwComment{CommentTwo}{/* }{~*/}
+
+\begin{algorithm}[tb]
+\footnotesize
+\caption{MHA Latency Estimation}
+\label{alg:estimate-mha}
+\LinesNumbered
+
+\KwIn{$
+\hspace{0.2em}\quad\quad\ {seq\_len}:\   \small\textit{Sequence length of the request} % {seq\_len}
+$}
+\KwData{$
+\hspace*{0.2em}{E}:\     \small\textit{Model embedding size}\newline
+\hspace*{0.2em}{L}_{tile}:\   \small\textit{GEMV latency for one PIM tile} \newline % {L}_{tile}
+\hspace*{0.2em}{L}_{GWRITE}:\  \small\textit{GWRITE latency for global buffer} \newline 
+\hspace*{0.2em}{E}:\  \small\textit{Model embedding size}\newline
+\hspace*{0.2em}{P}_{DRAM}:\  \small\textit{DRAM page size}\newline
+\hspace*{0.2em}{B}_{chnl}:\  \small\textit{PIM banks per channel}\newline
+\hspace*{0.2em}{N}_{head}:\  \small\textit{Number of heads}
+$}
+\KwOut{$
+\hspace{0.2em} \quad\ \ {L}_{MHA}:\ \small\textit{Estimated latency for MHA}% {L}_{MHA}
+$}
+
+\vspace{1ex}
+$L_{MHA}\ \leftarrow\ 0$\; \CommentTwo{\textit{\textsf{\footnotesize{\textbf{GEMV latency for \ensuremath{Key^T \times\ Query}}}}}}
+$N_{tiles}\ \leftarrow\ ({seq\_len}\ /\ {B}_{chnl})\ *\ (E\ /\ P_{DRAM})$\;
+${L}_{MHA}\ +=\ L_{GWRITE}\ *\ (E\ /\ P_{DRAM})$\;
+${L}_{MHA}\ +=\ L_{tile}\ *\ N_{tiles}$\;
+\vspace{1ex}
+\CommentTwo{\textit{\textsf{\footnotesize{\textbf{GEMV latency for \ensuremath{Logits\ \times\ Value}}}}}}
+$N_{tiles}\ \leftarrow\ ((E/N_{head})/B_{chnl})*((seq\_len/P_{DRAM})*N_{head})$\;
+${L}_{MHA}\ +=\ L_{GWRITE}\ *\ ((seq\_len\ /\ P_{DRAM})\ *\ N_{head})$\;
+${L}_{MHA}\ +=\ L_{tile}\ *\ N_{tiles}$\;
+\Return{$L_{MHA}$}
+\end{algorithm}
+\vspace{-1ex}

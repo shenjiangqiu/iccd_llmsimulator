@@ -1,0 +1,14 @@
+\section{Discussion}
+\label{sec:discuss}
+
+\niparagraph{Model training.}
+As training has fixed-length sequences for both input and output, it entirely entails GEMMs, not requiring any GEMVs for its computations. PIM targets accelerating bandwidth-bounded GEMV operations, delivering significantly poorer performance for GEMMs. Therefore, while a \neupims system can be used for training, its efficiency is limited.
+
+\niparagraph{Integration with production software stack.}
+%
+As described in Section~\ref{sec:neupims}, the \neupims compiler framework employs a similar interface with the modern machine learning libraries such as ONNX, PyTorch, and JAX.
+%
+Therefore, the integration of \neupims solution with the existing production software stack would require one to write a translator, which can convert the ONNX-, PyTorch-, and Jax-defined model representations into our LLM specification.
+%
+With the translator being developed, the rest of \neupims system would remain the same since it is already a holistic system stack that constitutes an inference serving scheduler, operator compilers for NPU and PIM, and an inference execution runtime.
+%

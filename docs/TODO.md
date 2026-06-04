@@ -1,12 +1,8 @@
 # TODO
 
-## 待做: 敏感性分析
+## 待做 (已完成: 敏感性分析 ✓)
 
-对 context length 做敏感性分析 (4K → 200K)，观察各配置的 Score computation / Context aggregation 延迟随序列长度变化：
-- 配置: exp1~exp6 全部
-- Context: 4096, 8192, 16384, 32768, 65536, 131072, 196608
-- 输出: per-step Q@K / S@V / Gen 随 context 变化的图表
-- 更新到论文 experiment section
+对 context length 做敏感性分析 (4K → 16K)，已生成图表并更新论文。
 
 ---
 

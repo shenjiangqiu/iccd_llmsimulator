@@ -1,0 +1,49 @@
+
+\section{Scaling \neupims System}
+\label{sec:scale}
+
+Model parallelism, which involves partitioning model parameters across multiple \neupims devices for parallel processing, is essential for inference tasks of LLM, due to the limited memory capacity of \neupims devices.
+%
+In this section, we will discuss the applicability of \neupims systems to pipeline parallelism and tensor parallelism, two widely used model parallelism techniques in deep learning libraries~\cite{megatronlm, tensorrt, tensorrt-llm} for LLM inference.
+%
+Note that, these model parallelism strategies are not the contribution of this work, but this section highlights the adaptability of such techniques to \neupims system.
+
+\subsection{Pipeline Parallelism of \neupims System}
+Pipeline parallelism involves dividing the model layer-wise, so that several layers of model are placed on a single \neupims device. 
+%
+To facilitate parallel processing, the batch is divided into micro-batches corresponding to the pipeline depth, and each device processes them in a pipelined manner. 
+%
+This approach can also be applied to \neupims systems in a similar manner.
+%
+
+%
+When applying pipeline parallelism to the \neupims systems, the number of decoder blocks executed on a single \neupims device decreases proportionally. 
+%
+As mentioned in Section~\ref{subsec:sub-batch}, the reduced decoder blocks co-located in one \neupims device would lower the achievable performance benefits.
+%
+Furthermore, exploiting pipeline parallelism leads to smaller batch size.
+%
+Using the sub-batch interleaving technique further reduces batch size, which would lead to under-utilization of the NPU systolic arrays. 
+%
+
+%
+\subsection{Tensor Parallelism of \neupims System}
+%
+Tensor parallelism is a parallelization approach that splits the model tensors into multiple shards and distributes them across devices.
+%
+Multiple devices execute on their respective model shards in parallel, the results of which are aggregated at the end of the step. 
+%
+This aggregation requires communication between devices.
+%
+
+%
+Although the sub-batch interleaving technique increases communication frequency twofold, the total communication traffic remains unchanged compared to the non-partitioned batch, resulting in only a modest overhead from communication.
+%
+Moreover, the sub-batch that completes first among the two sub-batches can engage in communication, while the other sub-batch performs computations. 
+%
+This further reduces the communication latency, mitigating the increased communication overhead.
+%
+
+%
+Inspired by the aforementioned insights, we prioritize the exploitation of tensor parallelism over pipeline parallelism and start employing pipeline parallelism when the model size is too large to exclusively leverage tensor parallelism.
+%

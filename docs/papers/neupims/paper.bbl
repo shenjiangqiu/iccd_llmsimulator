@@ -1,0 +1,433 @@
+\begin{thebibliography}{10}
+
+\bibitem{tensorrt}
+{Nvidia Tensor RT 4.0}.
+\newblock \url{https://developer.nvidia.com/tensorrt}.
+
+\bibitem{hugging-face}
+{HuggingFace}.
+\newblock \url{https://github.com/huggingface/transformers/tree/main}, 2022.
+
+\bibitem{onnxim}
+{ONNXim NPU Simulator}.
+\newblock \url{https://github.com/PSAL-POSTECH/ONNXim}, 2024.
+
+\bibitem{fae}
+Muhammad Adnan, Yassaman~Ebrahimzadeh Maboud, Divya Mahajan, and Prashant~J. Nair.
+\newblock {Accelerating Recommendation System Training by Leveraging Popular Choices}.
+\newblock {\em Proc. VLDB Endow.}, 15(1):127–140, jan 2022.
+
+\bibitem{hotline}
+Muhammad Adnan, Yassaman~Ebrahimzadeh Maboud, Divya Mahajan, and Prashant~J Nair.
+\newblock {Heterogeneous Acceleration Pipeline for Recommendation System Training}.
+\newblock {\em arXiv preprint arXiv:2204.05436}, 2022.
+
+\bibitem{7284059}
+Junwhan Ahn, Sungpack Hong, Sungjoo Yoo, Onur Mutlu, and Kiyoung Choi.
+\newblock {A scalable processing-in-memory accelerator for parallel graph processing}.
+\newblock In {\em ISCA}, 2015.
+
+\bibitem{pim-instr}
+Junwhan Ahn, Sungjoo Yoo, Onur Mutlu, and Kiyoung Choi.
+\newblock {PIM-enabled instructions: A low-overhead, locality-aware processing-in-memory architecture}.
+\newblock In {\em ISCA}, 2015.
+
+\bibitem{deepspeed}
+Reza~Yazdani Aminabadi, Samyam Rajbhandari, Minjia Zhang, Ammar~Ahmad Awan, Cheng Li, Du~Li, Elton Zheng, Jeff Rasley, Shaden Smith, Olatunji Ruwase, and Yuxiong He.
+\newblock {DeepSpeed Inference: Enabling Efficient Inference of Transformer Models at Unprecedented Scale}.
+\newblock Technical report, Microsoft, 06 2022.
+
+\bibitem{google23-palm2}
+Rohan Anil, Andrew~M. Dai, Orhan Firat, Melvin Johnson, Dmitry Lepikhin, Alexandre Passos, Siamak Shakeri, Emanuel Taropa, Paige Bailey, Zhifeng Chen, Eric Chu, Jonathan~H. Clark, Laurent~El Shafey, Yanping Huang, Kathy Meier-Hellstern, Gaurav Mishra, Erica Moreira, Mark Omernick, Kevin Robinson, Sebastian Ruder, Yi~Tay, Kefan Xiao, Yuanzhong Xu, Yujing Zhang, Gustavo~Hernandez Abrego, Junwhan Ahn, Jacob Austin, Paul Barham, Jan Botha, James Bradbury, Siddhartha Brahma, Kevin Brooks, Michele Catasta, Yong Cheng, Colin Cherry, Christopher~A. Choquette-Choo, Aakanksha Chowdhery, Clément Crepy, Shachi Dave, Mostafa Dehghani, Sunipa Dev, Jacob Devlin, Mark Díaz, Nan Du, Ethan Dyer, Vlad Feinberg, Fangxiaoyu Feng, Vlad Fienber, Markus Freitag, Xavier Garcia, Sebastian Gehrmann, Lucas Gonzalez, Guy Gur-Ari, Steven Hand, Hadi Hashemi, Le~Hou, Joshua Howland, Andrea Hu, Jeffrey Hui, Jeremy Hurwitz, Michael Isard, Abe Ittycheriah, Matthew Jagielski, Wenhao Jia, Kathleen Kenealy, Maxim Krikun, Sneha Kudugunta, Chang
+  Lan, Katherine Lee, Benjamin Lee, Eric Li, Music Li, Wei Li, YaGuang Li, Jian Li, Hyeontaek Lim, Hanzhao Lin, Zhongtao Liu, Frederick Liu, Marcello Maggioni, Aroma Mahendru, Joshua Maynez, Vedant Misra, Maysam Moussalem, Zachary Nado, John Nham, Eric Ni, Andrew Nystrom, Alicia Parrish, Marie Pellat, Martin Polacek, Alex Polozov, Reiner Pope, Siyuan Qiao, Emily Reif, Bryan Richter, Parker Riley, Alex~Castro Ros, Aurko Roy, Brennan Saeta, Rajkumar Samuel, Renee Shelby, Ambrose Slone, Daniel Smilkov, David~R. So, Daniel Sohn, Simon Tokumine, Dasha Valter, Vijay Vasudevan, Kiran Vodrahalli, Xuezhi Wang, Pidong Wang, Zirui Wang, Tao Wang, John Wieting, Yuhuai Wu, Kelvin Xu, Yunhan Xu, Linting Xue, Pengcheng Yin, Jiahui Yu, Qiao Zhang, Steven Zheng, Ce~Zheng, Weikang Zhou, Denny Zhou, Slav Petrov, and Yonghui Wu.
+\newblock {PaLM 2 Technical Report}, 2023.
+
+\bibitem{chameleon-pim}
+Hadi Asghari-Moghaddam, Young~Hoon Son, Jung~Ho Ahn, and Nam~Sung Kim.
+\newblock {Chameleon: Versatile and practical near-DRAM acceleration architecture for large memory systems}.
+\newblock In {\em MICRO}, 2016.
+
+\bibitem{cacti-v7}
+Rajeev Balasubramonian, Andrew~B. Kahng, Naveen Muralimanohar, Ali Shafiee, and Vaishnav Srinivas.
+\newblock {CACTI 7: New Tools for Interconnect Exploration in Innovative Off-Chip Memories}.
+\newblock {\em ACM Transactions on Architecture and Code Optimization (TACO)}, 14(2), jun 2017.
+
+\bibitem{black22-gptneox20b}
+Sid Black, Stella Biderman, Eric Hallahan, Quentin Anthony, Leo Gao, Laurence Golding, Horace He, Connor Leahy, Kyle McDonell, Jason Phang, Michael Pieler, USVSN~Sai Prashanth, Shivanshu Purohit, Laria Reynolds, Jonathan Tow, Ben Wang, and Samuel Weinbach.
+\newblock {GPT-NeoX-20B: An Open-Source Autoregressive Language Model}, 2022.
+
+\bibitem{chen21-llm-code}
+Mark Chen, Jerry Tworek, Heewoo Jun, Qiming Yuan, Henrique~Ponde de~Oliveira~Pinto, Jared Kaplan, Harri Edwards, Yuri Burda, Nicholas Joseph, Greg Brockman, Alex Ray, Raul Puri, Gretchen Krueger, Michael Petrov, Heidy Khlaaf, Girish Sastry, Pamela Mishkin, Brooke Chan, Scott Gray, Nick Ryder, Mikhail Pavlov, Alethea Power, Lukasz Kaiser, Mohammad Bavarian, Clemens Winter, Philippe Tillet, Felipe~Petroski Such, Dave Cummings, Matthias Plappert, Fotios Chantzis, Elizabeth Barnes, Ariel Herbert-Voss, William~Hebgen Guss, Alex Nichol, Alex Paino, Nikolas Tezak, Jie Tang, Igor Babuschkin, Suchir Balaji, Shantanu Jain, William Saunders, Christopher Hesse, Andrew~N. Carr, Jan Leike, Josh Achiam, Vedant Misra, Evan Morikawa, Alec Radford, Matthew Knight, Miles Brundage, Mira Murati, Katie Mayer, Peter Welinder, Bob McGrew, Dario Amodei, Sam McCandlish, Ilya Sutskever, and Wojciech Zaremba.
+\newblock {Evaluating Large Language Models Trained on Code}, 2021.
+
+\bibitem{pimcloud}
+Shuang Chen, Yi~Jiang, Christina Delimitrou, and José~F. Martínez.
+\newblock {PIMCloud: QoS-Aware Resource Management of Latency-Critical Applications in Clouds with Processing-in-Memory}.
+\newblock In {\em HPCA}, 2022.
+
+\bibitem{10.1145/3458817.3476146}
+Benjamin~Y. Cho, Jeageun Jung, and Mattan Erez.
+\newblock {Accelerating bandwidth-bound deep learning inference with main-memory accelerators}.
+\newblock In {\em SC}, 2021.
+
+\bibitem{AttAcc}
+Jaewan Choi, Jaehyun Park, Kwanhee Kyung, Nam~Sung Kim, and Jung~Ho Ahn.
+\newblock Unleashing the potential of pim: Accelerating large batched inference of transformer-based generative models.
+\newblock {\em IEEE Computer Architecture Letters}, 22(2):113--116, 2023.
+
+\bibitem{onnxruntime}
+ONNX~Runtime developers.
+\newblock {ONNX Runtime}.
+\newblock \url{https://onnxruntime.ai/}, 2021.
+
+\bibitem{bert:2018}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.
+\newblock {BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding}.
+\newblock In {\em arXiv}, 2018.
+
+\bibitem{computedram}
+Fei Gao, Georgios Tziantzioulis, and David Wentzlaff.
+\newblock {ComputeDRAM: In-Memory Compute Using Off-the-Shelf DRAMs}.
+\newblock In {\em MICRO}, 2019.
+
+\bibitem{10.1145/3547353.3522661}
+Christina Giannoula, Ivan Fernandez, Juan G\'{o}mez-Luna, Nectarios Koziris, Georgios Goumas, and Onur Mutlu.
+\newblock Towards efficient sparse matrix vector multiplication on real processing-in-memory architectures.
+\newblock {\em SIGMETRICS Perform. Eval. Rev.}, 50(1):33–34, jul 2022.
+
+\bibitem{10.1145/3489048.3522661}
+Christina Giannoula, Ivan Fernandez, Juan G\'{o}mez-Luna, Nectarios Koziris, Georgios Goumas, and Onur Mutlu.
+\newblock {Towards Efficient Sparse Matrix Vector Multiplication on Real Processing-In-Memory Architectures}.
+\newblock In {\em Abstract Proceedings of the 2022 ACM SIGMETRICS/IFIP PERFORMANCE Joint International Conference on Measurement and Modeling of Computer Systems}, 2022.
+
+\bibitem{9912078}
+Christina Giannoula, Ivan Fernandez, Juan Gómez-Luna, Nectarios Koziris, Georgios Goumas, and Onur Mutlu.
+\newblock {SparseP: Efficient Sparse Matrix Vector Multiplication on Real Processing-In-Memory Architectures}.
+\newblock In {\em ISVLSI}, 2022.
+
+\bibitem{9912072}
+Juan Gómez-Luna, Yuxin Guo, Sylvan Brocard, Julien Legriel, Remy Cimadomo, Geraldo~F. Oliveira, Gagandeep Singh, and Onur Mutlu.
+\newblock {Machine Learning Training on a Real Processing-in-Memory System}.
+\newblock In {\em ISVLSI}, 2022.
+
+\bibitem{9771457}
+Juan Gómez-Luna, Izzat~El Hajj, Ivan Fernandez, Christina Giannoula, Geraldo~F. Oliveira, and Onur Mutlu.
+\newblock {Benchmarking a New Paradigm: Experimental Analysis and Characterization of a Real Processing-in-Memory System}.
+\newblock {\em IEEE Access}, 10:52565--52608, 2022.
+
+\bibitem{newton}
+Mingxuan He, Choungki Song, Ilkon Kim, Chunseok Jeong, Seho Kim, Il~Park, Mithuna Thottethodi, and T.~N. Vijaykumar.
+\newblock {Newton: A DRAM-maker’s Accelerator-in-Memory (AiM) Architecture for Machine Learning}.
+\newblock In {\em MICRO}, 2020.
+
+\bibitem{heo2023primo}
+Jaehoon Heo, Yongwon Shin, Sangjin Choi, Sungwoong Yune, Jung-Hoon Kim, Hyojin Sung, Youngjin Kwon, and Joo-Young Kim.
+\newblock {PRIMO: A Full-Stack Processing-in-DRAM Emulation Framework for Machine Learning Workloads}.
+\newblock In {\em ICCAD}, 2023.
+
+\bibitem{hoffmann22-chinchilla}
+Jordan Hoffmann, Sebastian Borgeaud, Arthur Mensch, Elena Buchatskaya, Trevor Cai, Eliza Rutherford, Diego de~Las~Casas, Lisa~Anne Hendricks, Johannes Welbl, Aidan Clark, Tom Hennigan, Eric Noland, Katie Millican, George van~den Driessche, Bogdan Damoc, Aurelia Guy, Simon Osindero, Karen Simonyan, Erich Elsen, Jack~W. Rae, Oriol Vinyals, and Laurent Sifre.
+\newblock {Training Compute-Optimal Large Language Models}, 2022.
+
+\bibitem{gpipe}
+Yanping Huang, Youlong Cheng, Ankur Bapna, Orhan Firat, Dehao Chen, Mia~Xu Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc~V. Le, Yonghui Wu, and Zhifeng Chen.
+\newblock {GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism}.
+\newblock In {\em NeurIPS}, 2019.
+
+\bibitem{hyun2023pathfinding}
+Bongjoon Hyun, Taehun Kim, Dongjae Lee, and Minsoo Rhu.
+\newblock {Pathfinding Future PIM Architectures by Demystifying a Commercial PIM Technology}.
+\newblock In {\em HPCA}, 2024.
+
+\bibitem{floatpim}
+Mohsen Imani, Saransh Gupta, Yeseong Kim, and Tajana Rosing.
+\newblock {FloatPIM: In-Memory Acceleration of Deep Neural Network Training with High Precision}.
+\newblock In {\em ISCA}, 2019.
+
+\bibitem{dual-micro}
+Mohsen Imani, Saikishan Pampana, Saransh Gupta, Minxuan Zhou, Yeseong Kim, and Tajana Rosing.
+\newblock {DUAL: Acceleration of Clustering Algorithms using Digital-based Processing In-Memory}.
+\newblock In {\em MICRO}, 2020.
+
+\bibitem{micron-power}
+J~Janzen.
+\newblock {Calculating memory system power for DDR3}.
+\newblock {\em Micron Designline}, 13(1), 2008.
+
+\bibitem{jonatan2024scalability}
+Gilbert Jonatan, Haeyoon Cho, Hyojun Son, Xiangyu Wu, Neal Livesay, Evelio Mora, Kaustubh Shivdikar, Jos\'{e}~L. Abell\'{a}n, Ajay Joshi, David Kaeli, and John Kim.
+\newblock {Scalability Limitations of Processing-in-Memory using Real System Evaluations}.
+\newblock {\em Proceedings of the ACM on Measurement and Analysis of Computing Systems}, 2024.
+
+\bibitem{tpuv4}
+Norm Jouppi, George Kurian, Sheng Li, Peter Ma, Rahul Nagarajan, Lifeng Nai, Nishant Patil, Suvinay Subramanian, Andy Swing, Brian Towles, Clifford Young, Xiang Zhou, Zongwei Zhou, and David~A Patterson.
+\newblock {TPU v4: An Optically Reconfigurable Supercomputer for Machine Learning with Hardware Support for Embeddings}.
+\newblock In {\em ISCA}, 2023.
+
+\bibitem{aespa}
+Hongju Kal, Chanyoung Yoo, and Won~Woo Ro.
+\newblock {AESPA: Asynchronous Execution Scheme to Exploit Bank-Level Parallelism of Processing-in-Memory}.
+\newblock In {\em MICRO}, 2023.
+
+\bibitem{10.1145/3490422.3502355}
+Shinhaeng Kang, Sukhan Lee, Byeongho Kim, Hweesoo Kim, Kyomin Sohn, Nam~Sung Kim, and Eojin Lee.
+\newblock {An FPGA-based RNN-T Inference Accelerator with PIM-HBM}.
+\newblock In {\em FPGA}, 2022.
+
+\bibitem{RecNMP}
+Liu Ke, Udit Gupta, Benjamin~Youngjae Cho, David Brooks, Vikas Chandra, Utku Diril, Amin Firoozshahian, Kim Hazelwood, Bill Jia, Hsien-Hsin~S. Lee, Meng Li, Bert Maher, Dheevatsa Mudigere, Maxim Naumov, Martin Schatz, Mikhail Smelyanskiy, Xiaodong Wang, Brandon Reagen, Carole-Jean Wu, Mark Hempstead, and Xuan Zhang.
+\newblock Recnmp: Accelerating personalized recommendation with near-memory processing.
+\newblock In {\em 2020 ACM/IEEE 47th Annual International Symposium on Computer Architecture (ISCA)}, pages 790--803, 2020.
+
+\bibitem{virtualpim}
+Donghyeon Kim, Taehoon Kim, Inyong Hwang, Taehyeong Park, Hanjun Kim, Youngsok Kim, and Yongjun Park.
+\newblock {Virtual PIM: Resource-Aware Dynamic DPU Allocation and Workload Scheduling Framework for Multi-DPU PIM Architecture}.
+\newblock In {\em PACT}, 2023.
+
+\bibitem{gradpim}
+Heesu Kim, Hanmin Park, Taehyun Kim, Kwanheum Cho, Eojin Lee, Soojung Ryu, Hyuk-Jae Lee, Kiyoung Choi, and Jinho Lee.
+\newblock {GradPIM: A Practical Processing-in-DRAM Architecture for Gradient Descent}.
+\newblock In {\em HPCA}, 2021.
+
+\bibitem{hcs23-aquabolt-xl}
+Jin~Hyun Kim, Shin-haeng Kang, Sukhan Lee, Hyeonsu Kim, Woongjae Song, Yuhwan Ro, Seungwon Lee, David Wang, Hyunsung Shin, Bengseng Phuah, Jihyun Choi, Jinin So, YeonGon Cho, JoonHo Song, Jangseok Choi, Jeonghyeon Cho, Kyomin Sohn, Youngsoo Sohn, Kwangil Park, and Nam~Sung Kim.
+\newblock {Aquabolt-XL: Samsung HBM2-PIM with in-memory processing for ML accelerators and beyond}.
+\newblock In {\em Hot Chips}, 2021.
+
+\bibitem{vllm}
+Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody~Hao Yu, Joseph Gonzalez, Hao Zhang, and Ion Stoica.
+\newblock {Efficient Memory Management for Large Language Model Serving with PagedAttention}.
+\newblock In {\em SOSP}, 2023.
+
+\bibitem{kvcaching}
+Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody~Hao Yu, Joseph Gonzalez, Hao Zhang, and Ion Stoica.
+\newblock {Efficient Memory Management for Large Language Model Serving with PagedAttention}.
+\newblock In {\em SOSP}, 2023.
+
+\bibitem{9365862}
+Young-Cheon Kwon, Suk~Han Lee, Jaehoon Lee, Sang-Hyuk Kwon, Je~Min Ryu, Jong-Pil Son, O~Seongil, Hak-Soo Yu, Haesuk Lee, Soo~Young Kim, Youngmin Cho, Jin~Guk Kim, Jongyoon Choi, Hyun-Sung Shin, Jin Kim, BengSeng Phuah, HyoungMin Kim, Myeong~Jun Song, Ahn Choi, Daeho Kim, SooYoung Kim, Eun-Bong Kim, David Wang, Shinhaeng Kang, Yuhwan Ro, Seungwoo Seo, JoonHo Song, Jaeyoun Youn, Kyomin Sohn, and Nam~Sung Kim.
+\newblock {25.4 A 20nm 6GB Function-In-Memory DRAM, Based on HBM2 with a 1.2TFLOPS Programmable Computing Unit Using Bank-Level Parallelism, for Machine Learning Applications}.
+\newblock In {\em ISSCC}, 2021.
+
+\bibitem{tensor-dimm}
+Youngeun Kwon, Yunjae Lee, and Minsoo Rhu.
+\newblock {TensorDIMM: A Practical Near-Memory Processing Architecture for Embeddings and Tensor Operations in Deep Learning}.
+\newblock In {\em MICRO}, 2019.
+
+\bibitem{scratchpipe}
+Youngeun Kwon and Minsoo Rhu.
+\newblock {Training Personalized Recommendation Systems from (GPU) Scratch: Look Forward Not Backwards}.
+\newblock In {\em ISCA}, 2022.
+
+\bibitem{9474146}
+Ann~Franchesca Laguna, Arman Kazemi, Michael Niemier, and X.~Sharon Hu.
+\newblock {In-Memory Computing based Accelerator for Transformer Networks for Long Sequences}.
+\newblock In {\em DATE}, 2021.
+
+\bibitem{9566881}
+Juhyoung Lee, Jihoon Kim, Wooyoung Jo, Sangyeob Kim, Sangjin Kim, Donghyeon Han, Jinsu Lee, and Hoi-Jun Yoo.
+\newblock {An Energy-efficient Floating-Point DNN Processor using Heterogeneous Computing Architecture with Exponent-Computing-in-Memory}.
+\newblock In {\em 2021 IEEE Hot Chips 33 Symposium (HCS)}, 2021.
+
+\bibitem{isscc22-aim-gddr6}
+Seongju Lee, Kyuyoung Kim, Sanghoon Oh, Joonhong Park, Gimoon Hong, Dongyoon Ka, Kyudong Hwang, Jeongje Park, Kyeongpil Kang, Jungyeon Kim, Junyeol Jeon, Nahsung Kim, Yongkee Kwon, Kornijcuk Vladimir, Woojae Shin, Jongsoon Won, Minkyu Lee, Hyunha Joo, Haerang Choi, Jaewook Lee, Donguc Ko, Younggun Jun, Keewon Cho, Ilwoong Kim, Choungki Song, Chunseok Jeong, Daehan Kwon, Jieun Jang, Il~Park, Junhyun Chun, and Joohwan Cho.
+\newblock {A 1ynm 1.25V 8Gb, 16Gb/s/pin GDDR6-based Accelerator-in-Memory supporting 1TFLOPS MAC Operation and Various Activation Functions for Deep-Learning Applications}.
+\newblock In {\em 2022 IEEE International Solid-State Circuits Conference (ISSCC)}, 2022.
+
+\bibitem{hbm_pim}
+Sukhan Lee, Shin-haeng Kang, Jaehoon Lee, Hyeonsu Kim, Eojin Lee, Seungwoo Seo, Hosang Yoon, Seungwon Lee, Kyounghwan Lim, Hyunsung Shin, Jinhyun Kim, O~Seongil, Anand Iyer, David Wang, Kyomin Sohn, and Nam~Sung Kim.
+\newblock {Hardware Architecture and Software Stack for PIM Based on Commercial DRAM Technology : Industrial Product}.
+\newblock In {\em ISCA}, 2021.
+
+\bibitem{dramsim3}
+Shang Li, Zhiyuan Yang, Dhiraj Reddy, Ankur Srivastava, and Bruce Jacob.
+\newblock Dramsim3: A cycle-accurate, thermal-capable dram simulator.
+\newblock {\em IEEE Computer Architecture Letters}, 19(2):106--109, 2020.
+
+\bibitem{decision_llm}
+Shuang Li, Xavier Puig, Chris Paxton, Yilun Du, Clinton Wang, Linxi Fan, Tao Chen, De-An Huang, Ekin Aky{\"u}rek, Anima Anandkumar, et~al.
+\newblock {Pre-trained language models for interactive decision-making}.
+\newblock {\em Advances in Neural Information Processing Systems}, 35:31199--31212, 2022.
+
+\bibitem{li2023alpaserve}
+Zhuohan Li, Lianmin Zheng, Yinmin Zhong, Vincent Liu, Ying Sheng, Xin Jin, Yanping Huang, Zhifeng Chen, Hao Zhang, Joseph~E Gonzalez, et~al.
+\newblock {$\{$AlpaServe$\}$: Statistical multiplexing with model parallelism for deep learning serving}.
+\newblock In {\em OSDI}, 2023.
+
+\bibitem{recross}
+Haifeng Liu, Long Zheng, Yu~Huang, Chaoqiang Liu, Xiangyu Ye, Jingrui Yuan, Xiaofei Liao, Hai Jin, and Jingling Xue.
+\newblock {Accelerating Personalized Recommendation with Cross-level Near-Memory Processing}.
+\newblock In {\em ISCA}, 2023.
+
+\bibitem{tabla:hpca}
+Divya Mahajan, Emmanuel Amaro, Hardik Sharma, Amir Yazdanbakhsh, Joon~Kyung Kim, and Hadi Esmaeilzadeh.
+\newblock {TABLA: A Unified Template-based Framework for Accelerating Statistical Machine Learning}.
+\newblock In {\em HPCA}, 2016.
+
+\bibitem{dana}
+Divya Mahajan, Joon~Kyung Kim, Jacob Sacks, Adel Ardalan, Arun Kumar, and Hadi Esmaeilzadeh.
+\newblock {In-RDBMS Hardware Acceleration of Advanced Analytics}.
+\newblock In {\em PVLDB}, 2018.
+
+\bibitem{miao2023spotserve}
+Xupeng Miao, Chunan Shi, Jiangfei Duan, Xiaoli Xi, Dahua Lin, Bin Cui, and Zhihao Jia.
+\newblock {Spotserve: Serving generative large language models on preemptible instances}.
+\newblock {\em arXiv preprint arXiv:2311.15566}, 2023.
+
+\bibitem{copilot}
+Microsoft.
+\newblock Github copilot.
+\newblock \url{https://github.com/features/copilot}, 2022.
+
+\bibitem{onnx}
+Facebook~Research Microsoft.
+\newblock Onnx: an open format to represent deep learning models.
+\newblock \url{http://onnx.ai/}, 2017.
+
+\bibitem{graphpim}
+Lifeng Nai, Ramyad Hadidi, Jaewoong Sim, Hyojong Kim, Pranith Kumar, and Hyesoon Kim.
+\newblock {GraphPIM: Enabling Instruction-Level PIM Offloading in Graph Computing Frameworks}.
+\newblock In {\em HPCA}, 2017.
+
+\bibitem{pipedream}
+Deepak Narayanan, Aaron Harlap, Amar Phanishayee, Vivek Seshadri, Nikhil~R Devanur, Gregory~R Ganger, Phillip~B Gibbons, and Matei Zaharia.
+\newblock {PipeDream: Generalized Pipeline Parallelism for DNN Training}.
+\newblock In {\em SOSP}, 2019.
+
+\bibitem{megatronlm}
+Nvidia.
+\newblock Megatron-lm.
+\newblock \url{https://github.com/NVIDIA/Megatron-LM}.
+
+\bibitem{tensorrt-llm}
+Nvidia.
+\newblock {TensorRT-LLM}.
+\newblock \url{https://github.com/NVIDIA/TensorRT-LLM}.
+
+\bibitem{nvidia_triton}
+{NVIDIA}.
+\newblock {NVIDIA Triton}.
+\newblock \url{https://developer.nvidia.com/triton-inference-server}, 2020.
+
+\bibitem{9869326}
+Geraldo~F. Oliveira, Juan Gómez-Luna, Saugata Ghose, Amirali Boroumand, and Onur Mutlu.
+\newblock Accelerating neural network inference with processing-in-dram: From the edge to the cloud.
+\newblock {\em IEEE Micro}, 42(6):25--38, 2022.
+
+\bibitem{tensorflow-serving}
+Christopher Olston, Noah Fiedel, Kiril Gorovoy, Jeremiah Harmsen, Li~Lao, Fangwei Li, Vinu Rajashekhar, Sukriti Ramesh, and Jordan Soyke.
+\newblock {TensorFlow-Serving: Flexible, High-Performance {ML} Serving}.
+\newblock {\em CoRR}, abs/1712.06139, 2017.
+
+\bibitem{openai-chatgpt}
+OpenAI.
+\newblock chatgpt.
+\newblock \url{https://chatgpt.com/blog/chatgpt}, 2023.
+
+\bibitem{openai23-gpt4}
+OpenAI.
+\newblock Gpt-4 technical report, 2023.
+
+\bibitem{micro21-trim}
+Jaehyun Park, Byeongho Kim, Sungmin Yun, Eojin Lee, Minsoo Rhu, and Jung~Ho Ahn.
+\newblock {TRiM: Enhancing Processor-Memory Interfaces with Scalable Tensor Reduction in Memory}.
+\newblock In {\em MICRO}, 2021.
+
+\bibitem{cosmic:micro}
+Jongse Park, Hardik Sharma, Divya Mahajan, Joon~Kyung Kim, Preston Olds, and Hadi Esmaeilzadeh.
+\newblock Scale-out acceleration for machine learning.
+\newblock In {\em MICRO}, October 2016.
+
+\bibitem{lpddr-gpt}
+Sang-Soo Park, KyungSoo Kim, Jinin So, Jin Jung, Jonggeon Lee, Kyoungwan Woo, Nayeon Kim, Younghyun Lee, Hyungyo Kim, Yongsuk Kwon, Jinhyun Kim, Jieun Lee, YeonGon Cho, Yongmin Tai, Jeonghyeon Cho, Hoyoung Song, Jung~Ho Ahn, and Nam~Sung Kim.
+\newblock {An LPDDR-based CXL-PNM Platform for TCO-Efficient GPT Inference}.
+\newblock In {\em HPCA}, 2024.
+
+\bibitem{pytorch}
+Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Köpf, Edward Yang, Zach DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu~Fang, Junjie Bai, and Soumith Chintala.
+\newblock {PyTorch: An Imperative Style, High-Performance Deep Learning Library}, 2019.
+
+\bibitem{arxiv22-efficiently}
+Reiner Pope, Sholto Douglas, Aakanksha Chowdhery, Jacob Devlin, James Bradbury, Jonathan Heek, Kefan Xiao, Shivani Agrawal, and Jeff Dean.
+\newblock {Efficiently scaling transformer inference}.
+\newblock 2023.
+
+\bibitem{dalle2}
+Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen.
+\newblock {Hierarchical Text-Conditional Image Generation with CLIP Latents}, 2022.
+
+\bibitem{meta23-code-llama}
+Baptiste Rozière, Jonas Gehring, Fabian Gloeckle, Sten Sootla, Itai Gat, Xiaoqing~Ellen Tan, Yossi Adi, Jingyu Liu, Tal Remez, Jérémy Rapin, Artyom Kozhevnikov, Ivan Evtimov, Joanna Bitton, Manish Bhatt, Cristian~Canton Ferrer, Aaron Grattafiori, Wenhan Xiong, Alexandre Défossez, Jade Copet, Faisal Azhar, Hugo Touvron, Louis Martin, Nicolas Usunier, Thomas Scialom, and Gabriel Synnaeve.
+\newblock {Code Llama: Open Foundation Models for Code}, 2023.
+
+\bibitem{dnnweaver:micro}
+Hardik Sharma, Jongse Park, Divya Mahajan, Emmanuel Amaro, Joon~Kyung Kim, Chenkai Shao, Asit Misra, and Hadi Esmaeilzadeh.
+\newblock From high-level deep neural models to fpgas.
+\newblock In {\em MICRO}, October 2016.
+
+\bibitem{alpaca}
+Rohan Taori, Ishaan Gulrajani, Tianyi Zhang, Yann Dubois, Xuechen Li, Carlos Guestrin, Percy Liang, and Tatsunori~B. Hashimoto.
+\newblock {Stanford Alpaca: An Instruction-following LLaMA model}.
+\newblock \url{https://github.com/tatsu-lab/stanford_alpaca}, 2023.
+
+\bibitem{pip}
+Jakub~M Tarnawski, Amar Phanishayee, Nikhil Devanur, Divya Mahajan, and Fanny Nina~Paravecino.
+\newblock {Efficient algorithms for device placement of dnn graph operators}.
+\newblock {\em Advances in Neural Information Processing Systems}, 33, 2020.
+
+\bibitem{mpt}
+MosaicML~NLP Team.
+\newblock {Introducing MPT-30B: Raising the bar for open-source foundation models}, 2023.
+
+\bibitem{sharegpt}
+ShareGPT Team.
+\newblock {ShareGPT}.
+\newblock \url{https://sharegpt.com}, 2023.
+
+\bibitem{touvron23-llama}
+Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, and Guillaume Lample.
+\newblock Llama: Open and efficient foundation language models, 2023.
+
+\bibitem{arxiv21-lightseq}
+Xiaohui Wang, Ying Xiong, Yang Wei, Mingxuan Wang, and Lei Li.
+\newblock {LightSeq: A High Performance Inference Library for Transformers}, 2021.
+
+\bibitem{infstream}
+Zhengrong Wang, Christopher Liu, Aman Arora, Lizy John, and Tony Nowatzki.
+\newblock {Infinity Stream: Portable and Programmer-Friendly In-/Near-Memory Fusion}.
+\newblock In {\em ASPLOS}, 2023.
+
+\bibitem{SpaceA}
+Xinfeng Xie, Zheng Liang, Peng Gu, Abanti Basak, Lei Deng, Ling Liang, Xing Hu, and Yuan Xie.
+\newblock {SpaceA: Sparse Matrix Vector Multiplication on Processing-in-Memory Accelerator}.
+\newblock In {\em HPCA}, 2021.
+
+\bibitem{orca}
+Gyeong-In Yu, Joo~Seong Jeong, Geon-Woo Kim, Soojeong Kim, and Byung-Gon Chun.
+\newblock {Orca: A Distributed Serving System for {Transformer-Based} Generative Models}.
+\newblock In {\em {OSDI}}, 2022.
+
+\bibitem{zeng23-glm130b}
+Aohan Zeng, Xiao Liu, Zhengxiao Du, Zihan Wang, Hanyu Lai, Ming Ding, Zhuoyi Yang, Yifan Xu, Wendi Zheng, Xiao Xia, Weng~Lam Tam, Zixuan Ma, Yufei Xue, Jidong Zhai, Wenguang Chen, Peng Zhang, Yuxiao Dong, and Jie Tang.
+\newblock {GLM-130B: An Open Bilingual Pre-trained Model}, 2023.
+
+\bibitem{zhang22-opt}
+Susan Zhang, Stephen Roller, Naman Goyal, Mikel Artetxe, Moya Chen, Shuohui Chen, Christopher Dewan, Mona Diab, Xian Li, Xi~Victoria Lin, Todor Mihaylov, Myle Ott, Sam Shleifer, Kurt Shuster, Daniel Simig, Punit~Singh Koura, Anjali Sridhar, Tianlu Wang, and Luke Zettlemoyer.
+\newblock {OPT: Open Pre-trained Transformer Language Models}, 2022.
+
+\bibitem{alpa}
+Lianmin Zheng, Zhuohan Li, Hao Zhang, Yonghao Zhuang, Zhifeng Chen, Yanping Huang, Yida Wang, Yuanzhong Xu, Danyang Zhuo, Eric~P Xing, Joseph Gonzalez, and Ion Stoica.
+\newblock {Alpa: Automating inter-and $\{$Intra-Operator$\}$ parallelism for distributed deep learning}.
+\newblock In {\em OSDI}, 2022.
+
+\bibitem{9563039}
+Minxuan Zhou, Guoyang Chen, Mohsen Imani, Saransh Gupta, Weifeng Zhang, and Tajana Rosing.
+\newblock {PIM-DL: Boosting DNN Inference on Digital Processing In-Memory Architectures via Data Layout Optimizations}.
+\newblock In {\em PACT}, 2021.
+
+\bibitem{hpca22-transpim}
+Minxuan Zhou, Weihong Xu, Jaeyoung Kang, and Tajana Rosing.
+\newblock {TransPIM: A Memory-based Acceleration via Software-Hardware Co-Design for Transformer}.
+\newblock In {\em HPCA}, 2022.
+
+\end{thebibliography}

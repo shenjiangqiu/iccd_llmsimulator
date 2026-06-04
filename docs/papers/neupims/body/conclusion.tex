@@ -1,0 +1,10 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+Large Language Model (LLM) inferencing, given its significance, demands dedicated resources that can be deployed at scale. However, these models present a confluence of challenges, encompassing high memory capacity, high compute intensity, and bandwidth constraints.
+%
+In this work we propose a novel system, \neupims, that integrates NPU (a general ML accelerator) with PIM technology to mitigate the limitations associated with different operations and their dataflow in the transformer layers.
+%
+We introduce a novel scheduling and execution strategy for the proposed system, that can better utilize HBM memory, compute intensive NPU, and the PIM accelerator for LLM inference serving. 
+%
+Results indicate that the system developed in this work offers a 1.6$\times$ throughput improvement compared to the baseline system that na\"ively integrates an NPU with the PIM accelerator.

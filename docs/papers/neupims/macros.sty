@@ -1,0 +1,67 @@
+\newcommand{\niparagraph}[1]{\vspace{2pt}\noindent\textbf{#1}}
+
+\newcommand{\redtext}[1]{\textcolor{red}{#1}}
+\newcommand{\bench}[1]{\textsf{#1}\xspace}
+\newcommand{\redbench}[1]{\textcolor{red}{\textsf{#1}}}
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,fill,inner sep=0.7pt,minimum size=1.0em] (char) {\textcolor{white}{#1}};}}
+\newcommand*\circlew[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=0.7pt] (char) {#1};}}
+\newcommand*\circledcap[1]{\protect\tikz[baseline=(char.base)]{\protect\node[shape=circle,fill,inner sep=0.7pt,minimum size=1.0em] (char) {\protect\textcolor{white}{#1}};}}
+
+\newcommand{\xvdec}[0]{\textsf{CoVA}\xspace}
+\newcommand{\cova}[0]{\xvdec}
+\newcommand{\circledparagraph}[2]{\vspace{2pt}\noindent\circled{#1} \textbf{#2}}
+\newcommand{\tline}[0]{\vspace{2pt}\hrule}
+\newcommand{\bline}[0]{\vspace{-5pt}\hrule\vspace{2.5pt}}
+
+
+\def\hlinewd#1{%
+\noalign{\ifnum0=`}\fi\hrule \@height #1 %
+\futurelet\reserved@a\@xhline} 
+
+\definecolor{cadmiumgreen}{rgb}{0.0, 0.42, 0.24}
+\definecolor{carnelian}{rgb}{0.7, 0.11, 0.11}
+\definecolor{magenta}{rgb}{0.99, 0.098, 0.55}
+\definecolor{customblue}{rgb}{0.20, 0.35, 0.91}
+% revision color: custom blue
+\definecolor{revisioncolor}{rgb}{0.20, 0.35, 0.91}
+\definecolor{cameracolor}{rgb}{0.99, 0.098, 0.55}
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\greenc}{{\textcolor{cadmiumgreen}{\cmark}}}
+
+\newcommand{\todo}[2]{\textcolor{red}{TODO[#1]}: \textcolor{blue}{#2}}
+\newcommand{\jongse}[1]{\textcolor{red}{Jongse}: \textcolor{blue}{#1}}
+\newcommand{\guseul}[1]{\textcolor{red}{Guseul}: \textcolor{cadmiumgreen}{#1}}
+
+\newcommand{\camera}[1]{\textcolor{cameracolor}{#1}}
+\newcommand{\revision}[1]{\textcolor{revisioncolor}{#1}}
+
+\captionsetup[sub]{font=normalsize,labelfont={rm}}
+
+\newcommand{\finding}[1]{
+\vspace{0.5ex}
+\noindent\fbox{\begin{minipage}{1\linewidth}
+{\sf\bf\it #1}
+\end{minipage}}
+}
+
+\newcommand{\customopen}{\textcolor{blue}{\{}}
+\newcommand{\customclose}{\textcolor{blue}{\}}}
+\newcommand{\customemail}[1]{\textcolor{blue}{\nolinkurl{#1}}}
+\newcommand{\customspace}{\hspace{0.3em}}
+
+
+\newcommand{\redx}{{\textcolor{red}{\xmark}}}
+\newcommand{\xxx}[0]{\textcolor{red}{XXX}\xspace}
+
+
+% \newcommand{\neupims}[0]{\textsc{NeuPIMs}\xspace}
+\newcommand{\neupims}[0]{\textsf{NeuPIMs}\xspace}
+\newcommand{\neupimstitle}[0]{\textsc{\large NeuPIMs}\xspace}
+\newcommand{\neupimssubtitle}[0]{\textsc{\normalsize NeuPIMs}\xspace}
+
+\newcommand{\gsheo}[1]{\textcolor{teal}{#1}}
+\newcommand{\cancel}[1]{\sout{\magenta{#1}}}
