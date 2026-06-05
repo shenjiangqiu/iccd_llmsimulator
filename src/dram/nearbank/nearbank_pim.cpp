@@ -64,26 +64,27 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
     NearbankGEMVResult result;
 
     // Data bytes: based on stored KV cache format (determines rowbuffer volume)
-    //  data_element_size_bytes == 2: FP16, 2B/element
-    //  data_element_size_bytes == 1: 2-bit packed, 4 elements/B → 0.25B/element
+    //  data_element_size_bytes >= 2: FP16, 2B/element
+    //  data_element_size_bytes <= 1: quantized, bit-width from kv_cache_bits
     double bytes_per_element = data_element_size_bytes;
+    double pe_elements_per_cycle = 1.0;
     if (data_element_size_bytes <= 1) {
-        bytes_per_element = 0.25;  // 2-bit packed: 4 elements per byte
+        int bits = config_.kv_cache_bits;  // 2 or 4
+        bytes_per_element = bits / 8.0;     // 0.25 (2-bit) or 0.5 (4-bit)
+        // PE element throughput: pe_width_bytes * (8 / bits) elem/cycle
+        //   e.g., 16B PE: 2-bit→64, 4-bit→32.  32B PE: 2-bit→128, 4-bit→64.
+        double pe_width = config_.pe_width_bytes;
+        if (compute_element_size_bytes <= 1) {
+            pe_width = config_.pe_lowbit_width_bytes;
+        }
+        pe_elements_per_cycle = pe_width * (8.0 / bits);
+    } else {
+        pe_elements_per_cycle = config_.pe_width_bytes / compute_element_size_bytes;
     }
+    double pe_cycle_for_compute = (compute_element_size_bytes <= 1)
+        ? config_.pe_lowbit_cycle_time_ns : config_.pe_cycle_time_ns;
 
-    // PE element throughput: based on compute precision
-    //  compute_element_size_bytes >= 2: FP16 PE, pe_width/compute = 8 elements/cycle
-    //  compute_element_size_bytes <= 1: 2-bit PE, pe_lowbit_width*4 = 128 elements/cycle
-    double pe_width_for_compute = config_.pe_width_bytes;
-    double pe_cycle_for_compute = config_.pe_cycle_time_ns;
-    double pe_elements_per_cycle = pe_width_for_compute / compute_element_size_bytes;
-    if (compute_element_size_bytes <= 1) {
-        pe_width_for_compute = config_.pe_lowbit_width_bytes;
-        pe_cycle_for_compute = config_.pe_lowbit_cycle_time_ns;
-        pe_elements_per_cycle = pe_width_for_compute * 4.0;  // 32B × 4 = 128 elem/cycle
-    }
-
-    // Flag: data is 2-bit but we compute in FP16 → need dequantization
+    // Flag: data is low-bit but we compute in FP16 → need dequantization
     bool implicit_dequant = (data_element_size_bytes <= 1 && compute_element_size_bytes >= 2);
 
     // --- Step 1: Calculate total data movement ---
@@ -174,13 +175,10 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
     // --- Step 6b: PIM dequantization overhead ---
     // Triggers when:
     //   a) enable_pim_dequant flag AND compute is FP16 (avoid double-counting
-    //      with asymmetric quant which operates in 2-bit space)
-    //   b) implicit_dequant: data is 2-bit but compute is FP16
-    //      (e.g. Score@V in Exp5: scores are FP16, V is 2-bit).
-    // Per element: 1 MUL (scale×int2) + 1 ADD (offset).
-    // Done inline with GEMV on the same data stream — PE time only.
-    // Dequant ops use low-bit PE rate; subsequent GEMV uses FP16 PE rate
-    // (pe_elements_per_cycle already reflects compute precision).
+    //      with asymmetric quant which operates in low-bit space)
+    //   b) implicit_dequant: data is low-bit but compute is FP16
+    // Per element: 1 MUL (scale×int) + 1 ADD (offset).
+    // Dequant ops use low-bit PE rate; subsequent GEMV uses FP16 PE rate.
     bool need_dequant = implicit_dequant ||
         (config_.enable_pim_dequant && compute_element_size_bytes >= 2);
 
@@ -188,8 +186,8 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
         double dequant_elements = static_cast<double>(K) * N;  // K or V matrix
         double dequant_ops = 2.0 * dequant_elements;  // 1 MUL + 1 ADD per element
         double dequant_per_bank = dequant_ops / num_banks;
-        // Dequant uses low-bit PE (2-bit processing, not FP16)
-        double lowbit_pe_rate = config_.pe_lowbit_width_bytes * 4.0;
+        // Dequant uses low-bit PE (quantized data processing)
+        double lowbit_pe_rate = config_.pe_lowbit_width_bytes * (8.0 / config_.kv_cache_bits);
         double dequant_pe_time = dequant_per_bank / lowbit_pe_rate * config_.pe_lowbit_cycle_time_ns;
 
         double total_pe_all = result.pe_compute_time_ns

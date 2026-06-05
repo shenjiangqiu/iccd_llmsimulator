@@ -64,3 +64,4 @@ nearbank_pim:
   zero_point_q: 1.0
   zero_point_k: 2.0
   enable_pim_dequant: true
+  kv_cache_bits: 2

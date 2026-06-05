@@ -64,6 +64,6 @@ nearbank_pim:
   enable_context_in_pim: true
   enable_scoring_in_pim: true
   enable_asymmetric_quant: true
-  kv_cache_bits: 2
+  kv_cache_bits: 4
   zero_point_q: 1.0
   zero_point_k: 2.0

@@ -1,3 +1,8 @@
+# Experiment 4: KV both 2-bit quantized, Q@K^T in PIM, softmax+score@V in GPU
+# Hybrid scenario: scoring GEMV offloaded to PIM, rest on GPU
+# Data type: 2-bit quantized (0.25 bytes per element)
+# Smaller data footprint → faster row buffer fills
+
 # ====== Model (llama3_8B | opt_6_7B | qwen3_8B | glm4_9B | llama3_405B) ======
 model:
   model_name: llama3_8B
@@ -45,15 +50,14 @@ simulation:
 log:
   print_log: on
   export_gantt: off
-  output_directory: ./data/
+  output_directory: ./data/exp4_2bit_hybrid/
   gantt_directory: ./gantt
 
 nearbank_pim:
-  # ====== PE Configuration ======
-  # FP16 PE: pe_width_bytes 8.0|16.0   pe_cycle_time_ns (default 0.5)
-  # INT2 PE: pe_lowbit_width_bytes 16.0|32.0   pe_lowbit_cycle_time_ns (default 0.5)
   enable_nearbank_model: true
   num_pim_banks: 2048
+  num_pim_cubes: 8
+  channels_per_cube: 32
   rowbuffer_size_bytes: 2048
   pe_width_bytes: 16.0
   pe_cycle_time_ns: 0.5
@@ -61,9 +65,9 @@ nearbank_pim:
   pe_lowbit_cycle_time_ns: 0.5
   dram_to_rb_bw_per_bank: 32000000000.0
   enable_softmax_in_pim: false
-  enable_context_in_pim: true
+  enable_context_in_pim: false
   enable_scoring_in_pim: true
   enable_asymmetric_quant: true
-  kv_cache_bits: 2
+  kv_cache_bits: 4
   zero_point_q: 1.0
   zero_point_k: 2.0

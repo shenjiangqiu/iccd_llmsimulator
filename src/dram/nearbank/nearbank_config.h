@@ -81,6 +81,11 @@ struct NearbankPIMConfig {
     // Cost: dequant ops + FP16 GEMV ops, all in PE (no extra DRAM reads)
     bool enable_pim_dequant = false;
 
+    // --- KV Cache Bit Width ---
+    // 2: 2-bit quantization (4 elements/byte packed)
+    // 4: 4-bit quantization (2 elements/byte packed)
+    int kv_cache_bits = 2;
+
     // --- Derived Values (computed after config is set) ---
     // PE throughput in bytes/second = pe_width_bytes / pe_cycle_time_ns * 1e9
     hw_metric getPEThroughput() const {

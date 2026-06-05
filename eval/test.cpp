@@ -244,6 +244,8 @@ int main(int argc, char *argv[]) {
       nb.zero_point_k = config["nearbank_pim"]["zero_point_k"].as<double>();
     if (config["nearbank_pim"]["enable_pim_dequant"])
       nb.enable_pim_dequant = config["nearbank_pim"]["enable_pim_dequant"].as<bool>();
+    if (config["nearbank_pim"]["kv_cache_bits"])
+      nb.kv_cache_bits = config["nearbank_pim"]["kv_cache_bits"].as<int>();
   }
 
   model_config.dataset = data_name;
