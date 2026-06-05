@@ -1,5 +1,0 @@
-[Prefill Mode] Output Length is modified into 1
-Using synthesis trace
-k_cache_0_0
-ERROR: Unvalid cached tensor request
-"/Users/sjq/git/LLMSimulator"

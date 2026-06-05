@@ -424,14 +424,17 @@ ExecStatus AttentionGenExecutionPIM(Device_Ptr device,
         }
         NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
             m, k, n, input->precision_byte, comp_pb);
+        // K loaded ONCE per kv_head, computed group_size times (one per Q head)
         time_ns gemv_latency = gemv_result.latency_ns * attention_group_size;
+        time_ns gemv_rb = gemv_result.rowbuffer_time_ns;  // K loaded once
+        time_ns gemv_pe = gemv_result.pe_compute_time_ns * attention_group_size;
         exec_status.compute_duration += gemv_latency;
         accumul_compute_duration += gemv_latency;
-        accumul_memory_duration += gemv_result.rowbuffer_time_ns * attention_group_size;
-        exec_status.pim_rb_duration += gemv_result.rowbuffer_time_ns * attention_group_size;
-        exec_status.pim_pe_duration += gemv_result.pe_compute_time_ns * attention_group_size;
-        exec_status.pim_rb_qk += gemv_result.rowbuffer_time_ns * attention_group_size;
-        exec_status.pim_pe_qk += gemv_result.pe_compute_time_ns * attention_group_size;
+        accumul_memory_duration += gemv_rb;
+        exec_status.pim_rb_duration += gemv_rb;
+        exec_status.pim_pe_duration += gemv_pe;
+        exec_status.pim_rb_qk += gemv_rb;
+        exec_status.pim_pe_qk += gemv_pe;
       } else if (use_nearbank) {
         time_ns comp_dur = flops / gpu_compute_peak_flops * 1000 * 1000 * 1000;
         exec_status.compute_duration += comp_dur;
@@ -532,13 +535,16 @@ ExecStatus AttentionGenExecutionPIM(Device_Ptr device,
         }
         NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
             m, k, n, input->precision_byte, comp_pb);
+        // V loaded ONCE per kv_head, computed group_size times
         time_ns gemv_latency = gemv_result.latency_ns * attention_group_size;
+        time_ns gemv_rb = gemv_result.rowbuffer_time_ns;  // V loaded once
+        time_ns gemv_pe = gemv_result.pe_compute_time_ns * attention_group_size;
         ctx_compute_duration += gemv_latency;
-        ctx_memory_duration += gemv_result.rowbuffer_time_ns * attention_group_size;
-        exec_status.pim_rb_duration += gemv_result.rowbuffer_time_ns * attention_group_size;
-        exec_status.pim_pe_duration += gemv_result.pe_compute_time_ns * attention_group_size;
-        exec_status.pim_rb_sv += gemv_result.rowbuffer_time_ns * attention_group_size;
-        exec_status.pim_pe_sv += gemv_result.pe_compute_time_ns * attention_group_size;
+        ctx_memory_duration += gemv_rb;
+        exec_status.pim_rb_duration += gemv_rb;
+        exec_status.pim_pe_duration += gemv_pe;
+        exec_status.pim_rb_sv += gemv_rb;
+        exec_status.pim_pe_sv += gemv_pe;
       } else if (use_nearbank) {
         time_ns comp_dur = flops / gpu_compute_peak_flops * 1000 * 1000 * 1000;
         ctx_compute_duration += comp_dur;
