@@ -22,12 +22,12 @@ MODEL_PARAMS = {
 }
 
 EXP_LABELS = {
-    "exp1": "FP16 GPU",
-    "exp2": "FP16 PIM",
-    "exp3": "2-bit GPU",
-    "exp4": "2-bit Hyb.",
-    "exp5": "2-bit All",
-    "exp6": "2-bit Deq.",
+    "exp1": "FP16 GPU", "exp1_fp16_gpu": "FP16 GPU",
+    "exp2": "FP16 PIM", "exp2_fp16_pim": "FP16 PIM",
+    "exp3": "2-bit GPU", "exp3_2bit_gpu": "2-bit GPU",
+    "exp4": "2-bit Hyb.", "exp4_2bit_hybrid": "2-bit Hyb.",
+    "exp5": "2-bit All", "exp5_2bit_allpim": "2-bit All",
+    "exp6": "2-bit Deq.", "exp6_2bit_dequant_pim": "2-bit Deq.",
     "exp4_pe_f16_8_i2_16": "Hyb (8B/16B)",
     "exp4_pe_f16_8_i2_32": "Hyb (8B/32B)",
     "exp4_pe_f16_16_i2_16": "Hyb (16B/16B)",
@@ -36,7 +36,19 @@ EXP_LABELS = {
     "exp5_pe_f16_8_i2_32": "All (8B/32B)",
     "exp5_pe_f16_16_i2_16": "All (16B/16B)",
     "exp5_pe_f16_16_i2_32": "All (16B/32B)",
+    "exp3_4bit_gpu": "4-bit GPU",
+    "exp4_4bit_hybrid": "4-bit Hyb.",
+    "exp5_4bit_allpim": "4-bit All",
 }
+
+def normalize_exp(exp_key):
+    """Map experiment keys like 'exp1_fp16_gpu' to short name like 'exp1'."""
+    mapping = {
+        "exp1_fp16_gpu": "exp1", "exp2_fp16_pim": "exp2",
+        "exp3_2bit_gpu": "exp3", "exp4_2bit_hybrid": "exp4",
+        "exp5_2bit_allpim": "exp5", "exp6_2bit_dequant_pim": "exp6",
+    }
+    return mapping.get(exp_key, exp_key)
 
 
 def find_node(tree, name):
@@ -132,88 +144,42 @@ def collect_data(log_dir):
     results = defaultdict(dict)
     default_model = "llama3_8B"
 
-    # Try JSON files first
-    json_files = sorted(glob.glob(os.path.join(log_dir, "config_*.json")))
-    for jf in json_files:
-        basename = os.path.basename(jf)
-        parts = basename.replace("config_", "").replace(".json", "")
+    def parse_filename(basename):
+        """Parse model and experiment from filename like 'glm4_9B_exp1_fp16_gpu.txt' or 'config_exp1_fp16_gpu.json'."""
+        parts = basename.replace(".txt", "").replace(".json", "")
+        # Look for experiment pattern in the name
+        exps = ["exp1_fp16_gpu", "exp2_fp16_pim", "exp3_2bit_gpu", "exp4_2bit_hybrid",
+                "exp5_2bit_allpim", "exp6_2bit_dequant_pim",
+                "exp3_4bit_gpu", "exp4_4bit_hybrid", "exp5_4bit_allpim",
+                "exp4_pe_f16_8_i2_16", "exp4_pe_f16_8_i2_32",
+                "exp4_pe_f16_16_i2_16", "exp4_pe_f16_16_i2_32",
+                "exp5_pe_f16_8_i2_16", "exp5_pe_f16_8_i2_32",
+                "exp5_pe_f16_16_i2_16", "exp5_pe_f16_16_i2_32"]
+        for e in exps:
+            if e in parts:
+                idx = parts.index(e)
+                prefix = parts[:idx].rstrip("_")
+                model = prefix if prefix in MODEL_PARAMS else default_model
+                return model, e
+        # Fallback: try base_exp patterns
+        for e in ["exp1", "exp2", "exp3_2bit", "exp4", "exp5", "exp6"]:
+            if e in parts:
+                return default_model, e
+        return default_model, parts
 
-        # Identify model: remove known experiment suffixes
-        model = default_model
-        exp = parts
-        # Check PE variants first (longer match)
-        pe_variants = [k for k in EXP_LABELS if k.startswith("exp4_pe")]
-        for pe in sorted(pe_variants, key=len, reverse=True):
-            if pe in parts:
-                exp = pe
-                prefix = parts[:parts.index(pe)]
-                if prefix and prefix.endswith("_"):
-                    prefix = prefix[:-1]
-                if prefix in MODEL_PARAMS:
-                    model = prefix
-                break
-        else:
-            for e in ["exp1", "exp2", "exp3", "exp5", "exp6", "exp4"]:
-                if e in parts and e not in [p for p in pe_variants]:
-                    # make sure we don't match exp4_pe as exp4
-                    if e == "exp4" and any(pe in parts for pe in pe_variants):
-                        continue
-                    exp = e
-                    prefix = parts[:parts.index(e)]
-                    if prefix and prefix.endswith("_"):
-                        prefix = prefix[:-1]
-                    if prefix in MODEL_PARAMS:
-                        model = prefix
-                    break
-
-        d = parse_json(jf)
-        txt_path = jf.replace(".json", ".txt")
-        if os.path.exists(txt_path):
-            txt_data = parse_raw_output(open(txt_path).read())
-            d.update(txt_data)
-        else:
-            txt_data = parse_raw_output("")
-
-        if d:
-            results[model][exp] = d
-
-    # Also try raw text files without JSON
-    txt_files = sorted(glob.glob(os.path.join(log_dir, "config_*.txt")))
+    # Process all txt files in log_dir
+    txt_files = sorted(glob.glob(os.path.join(log_dir, "*.txt")))
     for tf in txt_files:
         basename = os.path.basename(tf)
-        parts = basename.replace("config_", "").replace(".txt", "")
-        model = default_model
-        exp = parts
-        # Check PE variants first
-        pe_variants = [k for k in EXP_LABELS if k.startswith(("exp4_pe", "exp5_pe"))]
-        for pe in sorted(pe_variants, key=len, reverse=True):
-            if pe in parts:
-                exp = pe
-                prefix = parts[:parts.index(pe)]
-                if prefix and prefix.endswith("_"):
-                    prefix = prefix[:-1]
-                if prefix in MODEL_PARAMS:
-                    model = prefix
-                break
-        else:
-            for e in ["exp1", "exp2", "exp3", "exp6", "exp5", "exp4"]:
-                if e in parts:
-                    skip = False
-                    for pe in pe_variants:
-                        if pe in parts:
-                            skip = True; break
-                    if skip: continue
-                    exp = e
-                    prefix = parts[:parts.index(e)]
-                    if prefix and prefix.endswith("_"):
-                        prefix = prefix[:-1]
-                    if prefix in MODEL_PARAMS:
-                        model = prefix
-                    break
-        if model not in results or exp not in results[model]:
-            d = parse_raw_output(open(tf).read())
-            if d:
-                results[model][exp] = d
+        model, exp = parse_filename(basename)
+        d = parse_raw_output(open(tf).read())
+        if d:
+            # Also try JSON for layer_total info
+            jf = tf.replace(".txt", ".json")
+            if os.path.exists(jf):
+                jd = parse_json(jf)
+                d.update(jd)
+            results[model][exp] = d
 
     return results
 
@@ -246,8 +212,10 @@ def generate_markdown(results, output_path=None):
         lines.append("| " + " | ".join(headers) + " |")
         lines.append("|" + "|".join(["---"] * len(headers)) + "|")
 
-        for exp in sorted(EXP_LABELS.keys()):
+        for exp in sorted(model_data.keys()):
             d = model_data.get(exp, {})
+            if not d:
+                continue
             ns = d.get("num_seq", 16)
             per_seq = d.get("qk", 0) / ns if ns > 0 else 0
             row = [
@@ -299,7 +267,9 @@ def generate_markdown(results, output_path=None):
     lines.append("")
 
     # Build config list: base configs + PE variants
-    base_configs = ["exp1", "exp2", "exp3", "exp4", "exp5", "exp6"]
+    base_configs = ["exp1_fp16_gpu", "exp2_fp16_pim", "exp3_2bit_gpu",
+                    "exp4_2bit_hybrid", "exp5_2bit_allpim", "exp6_2bit_dequant_pim",
+                    "exp3_4bit_gpu", "exp4_4bit_hybrid", "exp5_4bit_allpim"]
     pe_configs = [k for k in EXP_LABELS if k.startswith(("exp4_pe", "exp5_pe"))]
     all_configs = base_configs + sorted(pe_configs)
 
@@ -314,7 +284,9 @@ def generate_markdown(results, output_path=None):
             d = results[model].get(exp, {})
             gen = d.get("qk", 0) + d.get("score_v", 0)
             if gen > 0:
-                fp16_gen = results[model].get("exp1", {}).get("qk", 0) + results[model].get("exp1", {}).get("score_v", 0)
+                fp16_key = "exp1_fp16_gpu"
+                fp16 = results[model].get(fp16_key, {})
+                fp16_gen = fp16.get("qk", 0) + fp16.get("score_v", 0)
                 if fp16_gen > 0:
                     speedup = fp16_gen / gen
                     row.append(f"{speedup:.1f}×")
@@ -338,7 +310,7 @@ def generate_markdown(results, output_path=None):
             params = MODEL_PARAMS.get(model, {})
             tps = compute_throughput(d, params)
             if tps > 0:
-                fp16_tps = compute_throughput(results[model].get("exp1", {}), params)
+                fp16_tps = compute_throughput(results[model].get("exp1_fp16_gpu", {}), params)
                 if fp16_tps > 0:
                     speedup = tps / fp16_tps
                     row.append(f"{speedup:.1f}×")
