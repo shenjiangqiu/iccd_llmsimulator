@@ -39,6 +39,24 @@ EXP_LABELS = {
     "exp3_4bit_gpu": "4-bit GPU",
     "exp4_4bit_hybrid": "4-bit Hyb.",
     "exp5_4bit_allpim": "4-bit All",
+    # 2-bit PE variants
+    "exp4_pe_f16_8_i2_16": "2-bit Hyb (FP16=8B/INT2=16B)",
+    "exp4_pe_f16_8_i2_32": "2-bit Hyb (FP16=8B/INT2=32B)",
+    "exp4_pe_f16_16_i2_16": "2-bit Hyb (FP16=16B/INT2=16B)",
+    "exp4_pe_f16_16_i2_32": "2-bit Hyb (FP16=16B/INT2=32B)",
+    "exp5_pe_f16_8_i2_16": "2-bit All (FP16=8B/INT2=16B)",
+    "exp5_pe_f16_8_i2_32": "2-bit All (FP16=8B/INT2=32B)",
+    "exp5_pe_f16_16_i2_16": "2-bit All (FP16=16B/INT2=16B)",
+    "exp5_pe_f16_16_i2_32": "2-bit All (FP16=16B/INT2=32B)",
+    # 4-bit PE variants
+    "exp4_4bit_pe_f16_8_i2_16": "4-bit Hyb (FP16=8B/INT2=16B)",
+    "exp4_4bit_pe_f16_8_i2_32": "4-bit Hyb (FP16=8B/INT2=32B)",
+    "exp4_4bit_pe_f16_16_i2_16": "4-bit Hyb (FP16=16B/INT2=16B)",
+    "exp4_4bit_pe_f16_16_i2_32": "4-bit Hyb (FP16=16B/INT2=32B)",
+    "exp5_4bit_pe_f16_8_i2_16": "4-bit All (FP16=8B/INT2=16B)",
+    "exp5_4bit_pe_f16_8_i2_32": "4-bit All (FP16=8B/INT2=32B)",
+    "exp5_4bit_pe_f16_16_i2_16": "4-bit All (FP16=16B/INT2=16B)",
+    "exp5_4bit_pe_f16_16_i2_32": "4-bit All (FP16=16B/INT2=32B)",
 }
 
 def normalize_exp(exp_key):
@@ -150,7 +168,11 @@ def collect_data(log_dir):
         # Look for experiment pattern in the name
         exps = ["exp1_fp16_gpu", "exp2_fp16_pim", "exp3_2bit_gpu", "exp4_2bit_hybrid",
                 "exp5_2bit_allpim", "exp6_2bit_dequant_pim",
-                "exp3_4bit_gpu", "exp4_4bit_hybrid", "exp5_4bit_allpim",
+                "exp3_4bit_gpu",                 "exp4_4bit_hybrid", "exp5_4bit_allpim",
+                "exp4_4bit_pe_f16_8_i2_16", "exp4_4bit_pe_f16_8_i2_32",
+                "exp4_4bit_pe_f16_16_i2_16", "exp4_4bit_pe_f16_16_i2_32",
+                "exp5_4bit_pe_f16_8_i2_16", "exp5_4bit_pe_f16_8_i2_32",
+                "exp5_4bit_pe_f16_16_i2_16", "exp5_4bit_pe_f16_16_i2_32",
                 "exp4_pe_f16_8_i2_16", "exp4_pe_f16_8_i2_32",
                 "exp4_pe_f16_16_i2_16", "exp4_pe_f16_16_i2_32",
                 "exp5_pe_f16_8_i2_16", "exp5_pe_f16_8_i2_32",
@@ -270,7 +292,7 @@ def generate_markdown(results, output_path=None):
     base_configs = ["exp1_fp16_gpu", "exp2_fp16_pim", "exp3_2bit_gpu",
                     "exp4_2bit_hybrid", "exp5_2bit_allpim", "exp6_2bit_dequant_pim",
                     "exp3_4bit_gpu", "exp4_4bit_hybrid", "exp5_4bit_allpim"]
-    pe_configs = [k for k in EXP_LABELS if k.startswith(("exp4_pe", "exp5_pe"))]
+    pe_configs = [k for k in EXP_LABELS if "pe_f16" in k]
     all_configs = base_configs + sorted(pe_configs)
 
     models_sorted = sorted(results.keys())

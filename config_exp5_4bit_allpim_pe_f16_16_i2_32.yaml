@@ -1,0 +1,69 @@
+# ====== Model (llama3_8B | opt_6_7B | qwen3_8B | glm4_9B | llama3_405B) ======
+model:
+  model_name: llama3_8B
+
+system:
+  gpu_gen: B100
+  nvlink_gen: 5
+  infiniband_gen: 800
+  num_node: 1
+  num_device: 4
+  processor_type: GPU+PIM
+  distribution:
+    expert_tensor_degree: 1
+    none_expert_tensor_degree: 1
+  optimization:
+    parallel_execution: on
+    hetero_subbatch: off
+    disagg_system: off
+    use_low_unit_moe_only: off
+    use_ramulator: on
+    compressed_kv: on
+    use_absorb: off
+    use_flash_mla: off
+    use_flash_attention: off
+    reuse_kv_cache: off
+    kv_cache_reuse_rate: 0.0
+    prefill_mode: off
+    decode_mode: on
+
+serving:
+  max_batch_size: 64
+  max_process_token: 0
+
+simulation:
+  data: synthesis
+  input_len: 16400
+  output_len: 128
+  precision_byte: 1
+  skewness: 0.0
+  iter: 1
+  injection_rate: 0
+  exit_out_of_memory: off
+  mem_cap_limit: off
+
+log:
+  print_log: on
+  export_gantt: off
+  output_directory: ./data/
+  gantt_directory: ./gantt
+
+nearbank_pim:
+  # ====== PE Configuration ======
+  # FP16 PE: pe_width_bytes 8.0|16.0   pe_cycle_time_ns (default 0.5)
+  # INT2 PE: pe_lowbit_width_bytes 16.0|32.0   pe_lowbit_cycle_time_ns (default 0.5)
+  enable_nearbank_model: true
+  num_pim_banks: 2048
+  rowbuffer_size_bytes: 2048
+  pe_width_bytes: 16.0
+  pe_cycle_time_ns: 0.5
+  pe_lowbit_width_bytes: 32.0
+  pe_lowbit_cycle_time_ns: 0.5
+  dram_to_rb_bw_per_bank: 32000000000.0
+  enable_softmax_in_pim: false
+  enable_context_in_pim: true
+  enable_scoring_in_pim: true
+  enable_asymmetric_quant: true
+  kv_cache_bits: 4
+  zero_point_q: 1.0
+  zero_point_k: 2.0
