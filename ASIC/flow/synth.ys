@@ -1,0 +1,14 @@
+read_verilog gen-verilog/VecAdd2.sv
+hierarchy -check -top VecAdd2
+proc
+opt
+fsm
+opt
+memory
+opt
+techmap
+opt
+abc -liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+opt
+write_verilog -noattr build/VecAdd2_synth.v
+stat
