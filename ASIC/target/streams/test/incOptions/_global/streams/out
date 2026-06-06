@@ -1,0 +1,2 @@
+[debug] Created transactional ClassFileManager with tempDir = /Users/sjq/git/LLMSimulator/ASIC/target/scala-2.13/test-classes.bak
+[debug] Removing the temporary directory used for backing up class files: /Users/sjq/git/LLMSimulator/ASIC/target/scala-2.13/test-classes.bak
