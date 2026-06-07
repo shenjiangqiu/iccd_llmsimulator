@@ -424,12 +424,15 @@ ExecStatus AttentionGenExecutionPIM(Device_Ptr device,
         }
         NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
             m, k, n, input->precision_byte, comp_pb);
-        // K loaded ONCE per kv_head, computed group_size times (one per Q head)
-        time_ns gemv_latency = gemv_result.latency_ns * attention_group_size;
-        time_ns gemv_rb = gemv_result.rowbuffer_time_ns;  // K loaded once
+        // GQA: K loaded ONCE per kv_head, computed group_size times (one per Q head).
+        // Latency = max(rb, pe_all × group_size) — pipelined rb + G PE passes.
+        time_ns gemv_rb = gemv_result.rowbuffer_time_ns;
+        time_ns gemv_pe_all = gemv_result.pe_compute_time_ns + 
+            (nb_config.enable_asymmetric_quant ? gemv_result.reduction_time_ns : 0.0);
+        time_ns kv_latency = std::max(gemv_rb, gemv_pe_all * attention_group_size);
         time_ns gemv_pe = gemv_result.pe_compute_time_ns * attention_group_size;
-        exec_status.compute_duration += gemv_latency;
-        accumul_compute_duration += gemv_latency;
+        exec_status.compute_duration += kv_latency;
+        accumul_compute_duration += kv_latency;
         accumul_memory_duration += gemv_rb;
         exec_status.pim_rb_duration += gemv_rb;
         exec_status.pim_pe_duration += gemv_pe;
@@ -535,11 +538,13 @@ ExecStatus AttentionGenExecutionPIM(Device_Ptr device,
         }
         NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
             m, k, n, input->precision_byte, comp_pb);
-        // V loaded ONCE per kv_head, computed group_size times
-        time_ns gemv_latency = gemv_result.latency_ns * attention_group_size;
-        time_ns gemv_rb = gemv_result.rowbuffer_time_ns;  // V loaded once
+        // GQA: V loaded ONCE per kv_head, computed group_size times
+        time_ns gemv_rb = gemv_result.rowbuffer_time_ns;
+        time_ns gemv_pe_all = gemv_result.pe_compute_time_ns + 
+            (nb_config.enable_asymmetric_quant ? gemv_result.reduction_time_ns : 0.0);
+        time_ns kv_latency = std::max(gemv_rb, gemv_pe_all * attention_group_size);
         time_ns gemv_pe = gemv_result.pe_compute_time_ns * attention_group_size;
-        ctx_compute_duration += gemv_latency;
+        ctx_compute_duration += kv_latency;
         ctx_memory_duration += gemv_rb;
         exec_status.pim_rb_duration += gemv_rb;
         exec_status.pim_pe_duration += gemv_pe;

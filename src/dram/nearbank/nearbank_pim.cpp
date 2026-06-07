@@ -180,7 +180,7 @@ NearbankGEMVResult NearbankPIMUnit::computeGEMVLatency(
     // Per element: 1 MUL (scale×int) + 1 ADD (offset).
     // Dequant ops use low-bit PE rate; subsequent GEMV uses FP16 PE rate.
     bool need_dequant = implicit_dequant ||
-        (config_.enable_pim_dequant && compute_element_size_bytes >= 2);
+        (config_.enable_pim_dequant && data_element_size_bytes <= 1 && compute_element_size_bytes >= 2);
 
     if (need_dequant) {
         double dequant_elements = static_cast<double>(K) * N;  // K or V matrix

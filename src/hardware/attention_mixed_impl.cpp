@@ -159,11 +159,16 @@ ExecStatus AttentionMixedExecutionPIM(Device_Ptr device,
     if (use_nearbank && nb_config.enable_scoring_in_pim) {
       int comp_pb = input->precision_byte;
       if (nb_config.enable_pim_dequant && input->precision_byte <= 1) {
-          comp_pb = 2;  // Q@K dequant: K is 2-bit, compute in FP16
+          comp_pb = 2;
       }
       NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
           m, k, n, input->precision_byte, comp_pb);
-      total_duration += gemv_result.latency_ns;
+      // GQA: K loaded once per kv_head, computed group_size times
+      time_ns gemv_rb = gemv_result.rowbuffer_time_ns;
+      time_ns gemv_pe_all = gemv_result.pe_compute_time_ns + 
+          (nb_config.enable_asymmetric_quant ? gemv_result.reduction_time_ns : 0.0);
+      time_ns kv_latency = std::max(gemv_rb, gemv_pe_all * attention_group_size);
+      total_duration += kv_latency * num_kv_heads;
     } else {
       time_ns comp_dur = flops / compute_peak_flops * 1000 * 1000 * 1000;
       time_ns mem_dur = memory_size / memory_bandwidth * 1000 * 1000 * 1000;
@@ -190,7 +195,11 @@ ExecStatus AttentionMixedExecutionPIM(Device_Ptr device,
       }
       NearbankGEMVResult gemv_result = nearbank_unit->computeGEMVLatency(
           m, k, n, input->precision_byte, comp_pb);
-      total_duration += gemv_result.latency_ns;
+      time_ns gemv_rb = gemv_result.rowbuffer_time_ns;
+      time_ns gemv_pe_all = gemv_result.pe_compute_time_ns + 
+          (nb_config.enable_asymmetric_quant ? gemv_result.reduction_time_ns : 0.0);
+      time_ns kv_latency = std::max(gemv_rb, gemv_pe_all * attention_group_size);
+      total_duration += kv_latency * num_kv_heads;
     } else {
       time_ns comp_dur = flops / compute_peak_flops * 1000 * 1000 * 1000;
       time_ns mem_dur = memory_size / memory_bandwidth * 1000 * 1000 * 1000;
