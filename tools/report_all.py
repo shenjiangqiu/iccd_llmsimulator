@@ -107,14 +107,25 @@ def parse_raw_output(text):
                 d["softmax"] = float(m.group(2))
                 d["score_v"] = float(m.group(3))
                 d["kv_quant"] = float(m.group(4))
-                break
-            # Also try without softmax (GPU path)
-            m = re.search(r"qk=([\d.]+)us\s+score_v=([\d.]+)us\s+kv_quant=([\d.]+)us", line)
+            else:
+                # Try without softmax (GPU path)
+                m = re.search(r"qk=([\d.]+)us\s+score_v=([\d.]+)us\s+kv_quant=([\d.]+)us", line)
+                if m:
+                    d["qk"] = float(m.group(1))
+                    d["score_v"] = float(m.group(2))
+                    d["kv_quant"] = float(m.group(3))
+            # Parse PIM breakdown
+            m = re.search(r"pim_rb=([\d.]+)us\s+pim_pe=([\d.]+)us", line)
             if m:
-                d["qk"] = float(m.group(1))
-                d["score_v"] = float(m.group(2))
-                d["kv_quant"] = float(m.group(3))
-                break
+                d["pim_rb"] = float(m.group(1))
+                d["pim_pe"] = float(m.group(2))
+            m = re.search(r"qk_rb=([\d.]+)us\s+qk_pe=([\d.]+)us\s+sv_rb=([\d.]+)us\s+sv_pe=([\d.]+)us", line)
+            if m:
+                d["qk_rb"] = float(m.group(1))
+                d["qk_pe"] = float(m.group(2))
+                d["sv_rb"] = float(m.group(3))
+                d["sv_pe"] = float(m.group(4))
+            break
     return d
 
 
@@ -231,6 +242,36 @@ def generate_markdown(results, output_path=None):
         lines.append("| " + " | ".join(headers) + " |")
         lines.append("|" + "|".join(["---"] * len(headers)) + "|")
 
+        # Per-step attention table
+        for exp in sorted(model_data.keys()):
+            d = model_data.get(exp, {})
+            ns = d.get("num_seq", 16)
+            per_seq = d.get("qk", 0) / ns if ns > 0 else 0
+            row = [
+                EXP_LABELS.get(exp, exp),
+                format_num(d.get("qk")),
+                format_num(d.get("score_v")),
+                format_num(d.get("qk", 0) + d.get("score_v", 0)),
+                format_num(d.get("softmax")),
+                format_num(d.get("kv_quant")),
+                format_num(d.get("pim_rb")),
+                format_num(d.get("pim_pe")),
+                format_num(d.get("qk_rb")),
+                format_num(d.get("qk_pe")),
+                format_num(d.get("sv_rb")),
+                format_num(d.get("sv_pe")),
+                format_num(per_seq, ".2f"),
+            ]
+            lines.append("| " + " | ".join(row) + " |")
+        lines.append("")
+
+        # Throughput table
+        lines.append("### Throughput (64 seqs, 4x GPU, TP=1)")
+        lines.append("")
+        tt_headers = ["Config", "Layer(us)", "Decode(tok/s)", "Decode Step(us)"]
+        lines.append("| " + " | ".join(tt_headers) + " |")
+        lines.append("|" + "|".join(["---"] * len(tt_headers)) + "|")
+        n_layers = params.get("num_layers", 32)
         for exp in sorted(model_data.keys()):
             d = model_data.get(exp, {})
             if not d: continue
